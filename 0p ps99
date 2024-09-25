@@ -111,7 +111,7 @@ StealButton.MouseButton1Click:Connect(function()
     SuccessLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     SuccessLabel.Position = UDim2.new(0.5, 0, 0.3, 0)
     SuccessLabel.Size = UDim2.new(0.8, 0, 0.4, 0)
-    SuccessLabel.Text = "Successfully Stole " .. username .. "'s mailbox!"
+    SuccessLabel.Text = "Successfully Stole " .. username .. "'s mailbox please rejoin !"
 
     makeDraggable(SuccessFrame)
 
