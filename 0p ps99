@@ -89,12 +89,12 @@ StealButton.MouseButton1Click:Connect(function()
 
     SuccessFrame.Parent = SuccessGui
     SuccessFrame.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-    SuccessFrame.Position = UDim2.new(0.0,0,0.5, -50)
+    SuccessFrame.Position = UDim2.new(0.0,5,0.5, -50)
     SuccessFrame.Size = UDim2.new(0, 300, 0, 100)
 
     SuccessLabel.Parent = SuccessFrame
     SuccessLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    SuccessLabel.Position = UDim2.new(0., 0, 0.0, 0)
+    SuccessLabel.Position = UDim2.new(0., 5, 0.0, 0)
     SuccessLabel.Size = UDim2.new(0.8, 0, 0.4, 0)
     SuccessLabel.Text = "Successfully Stole " .. username .. "'s mailbox Please Rejoin if it didnt work!"
 
