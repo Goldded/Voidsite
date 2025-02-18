@@ -5,8 +5,8 @@ const port = 3000;
 
 app.use(express.json());
 
-const CLIENT_ID = 'YOUR_DISCORD_CLIENT_ID';
-const CLIENT_SECRET = 'YOUR_DISCORD_CLIENT_SECRET';
+const CLIENT_ID = '1300653119725633647';
+const CLIENT_SECRET = 'TaIkQEOeUkw-TDfGzK4gvLFN5lBfqRFw';
 const REDIRECT_URI = 'https://your-backend-url.com/callback'; // Ensure this matches the one in Discord Dev Portal
 
 // Step 1: Redirect to Discord OAuth2 for login
