@@ -23,9 +23,9 @@
         .container {
             display: flex;
             gap: 15px;
-            margin-top: 20px;
             flex-direction: column;
             align-items: center;
+            margin-top: 20px;
         }
         select, input, button {
             background: #ff0080;
@@ -95,9 +95,6 @@
         .copy-button:disabled {
             background: #555;
         }
-        .testing-container {
-            margin-top: 20px;
-        }
         .additional-username-container {
             display: none;
             margin-top: 20px;
@@ -117,8 +114,9 @@
 <body>
     <h1>Script Generator</h1>
     
-    <!-- Testing Button -->
-    <div class="testing-container">
+    <!-- Sigma Detection and Testing Toggle -->
+    <div class="container">
+        <input type="text" id="username" placeholder="Roblox Username" oninput="detectSigma()">
         <button onclick="toggleAdditionalUsernameField()">Testing</button>
     </div>
 
@@ -142,7 +140,6 @@
     <!-- Popup for User Details -->
     <div id="popup" class="popup">
         <h2 id="game-title">Enter Details</h2>
-        <input type="text" id="username" placeholder="Roblox Username">
         <input type="text" id="discordUser" placeholder="Discord Username (for testing only)">
         <input type="text" id="webhook" placeholder="Webhook URL">
         <button onclick="generateScript()">Generate Script</button>
