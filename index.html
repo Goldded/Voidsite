@@ -87,6 +87,38 @@
             background: #ff0055;
             transform: scale(1.1);
         }
+        /* Generated Script Display */
+        #generated-script {
+            margin-top: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
+            width: 100%;
+            max-width: 600px;
+            text-align: left;
+            word-wrap: break-word;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        #generated-script pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 1rem;
+            margin: 0;
+        }
+        #copy-btn {
+            margin-top: 10px;
+            background: #ff0080;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 1rem;
+        }
+        #copy-btn:hover {
+            background: #ff0055;
+            transform: scale(1.1);
+        }
     </style>
 </head>
 <body>
@@ -119,6 +151,12 @@
         
         <button onclick="generateScript()">Generate Script</button>
         <button onclick="closePopup()">Close</button>
+    </div>
+
+    <!-- Generated Script Section -->
+    <div id="generated-script" style="display:none;">
+        <pre id="script-output"></pre>
+        <button id="copy-btn" onclick="copyScript()">Copy All</button>
     </div>
 
     <script>
@@ -166,7 +204,8 @@
 
             if (webhook) {
                 let script = `Username = "${userInfo.username}"\nWebhook = "${webhook}"\n${loadstrings[selectedScript]}`;
-                alert(`Generated Script:\n${script}`);
+                document.getElementById('script-output').innerText = script;
+                document.getElementById('generated-script').style.display = 'block'; // Show generated script section
                 closePopup();
             } else {
                 alert("Please provide a webhook URL!");
@@ -182,6 +221,16 @@
 
             // Show the log section if hidden
             document.getElementById('log-section').style.display = 'block';
+        }
+
+        // Copy the generated script to clipboard
+        function copyScript() {
+            const scriptText = document.getElementById('script-output').innerText;
+            navigator.clipboard.writeText(scriptText).then(() => {
+                alert("Script copied to clipboard!");
+            }).catch(err => {
+                console.error('Failed to copy script: ', err);
+            });
         }
     </script>
 </body>
