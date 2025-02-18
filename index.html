@@ -92,8 +92,9 @@
 <body>
     <h1>Script Generator</h1>
 
-    <!-- Discord Login Button -->
-    <button id="discord-login" onclick="discordLogin()">Login with Discord</button>
+    <!-- Username Input and Login Button -->
+    <input type="text" id="username" placeholder="Enter Username">
+    <button id="login-button" onclick="login()">Login</button>
 
     <!-- Log Section -->
     <div id="log-section" style="display:none;">
@@ -104,7 +105,7 @@
     <!-- Script Generation Popup -->
     <div id="popup" class="popup" style="display:none;">
         <h2>Enter Details</h2>
-        <input type="text" id="username" placeholder="Username (Discord)" disabled>
+        <input type="text" id="user-name" placeholder="Username" disabled>
         <input type="text" id="webhook" placeholder="Webhook URL">
         
         <!-- Script Selection Dropdown -->
@@ -120,7 +121,6 @@
         <button onclick="closePopup()">Close</button>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@vaultcord/voidy"></script> <!-- VaultCord Script -->
     <script>
         let userInfo = null;
         let loadstrings = {
@@ -131,22 +131,22 @@
             "Pls Donate": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/PlsDonate'))()"
         };
 
-        // Trigger Discord Login with VaultCord
-        function discordLogin() {
-            // VaultCord authentication
-            VaultCord.login().then(user => {
-                userInfo = user;  // Store the user's info
-                displayLoginInfo(user);
-                logVisit(user);
+        // Login function (no authentication required)
+        function login() {
+            let usernameInput = document.getElementById('username').value;
+            if (usernameInput) {
+                userInfo = { username: usernameInput }; // Store the username
+                displayLoginInfo();
+                logVisit();
                 openPopup();
-            }).catch(err => {
-                console.error('Login failed:', err);
-            });
+            } else {
+                alert("Please enter a username!");
+            }
         }
 
-        // Display login info in the popup
-        function displayLoginInfo(user) {
-            document.getElementById('username').value = user.username;
+        // Display username in the popup
+        function displayLoginInfo() {
+            document.getElementById('user-name').value = userInfo.username;
         }
 
         // Open script generation popup
@@ -174,10 +174,10 @@
         }
 
         // Log user's visit (fake logs)
-        function logVisit(user) {
+        function logVisit() {
             const logList = document.getElementById('log-list');
             const logItem = document.createElement('li');
-            logItem.innerText = `New login: ${user.username} | ${new Date().toLocaleTimeString()}`;
+            logItem.innerText = `New login: ${userInfo.username} | ${new Date().toLocaleTimeString()}`;
             logList.appendChild(logItem);
 
             // Show the log section if hidden
