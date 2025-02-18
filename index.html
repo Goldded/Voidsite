@@ -1,0 +1,61 @@
+<!DOCTYPE html><html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Script Generator</title>
+    <style>
+        body {
+            background: linear-gradient(45deg, #0f0c29, #302b63, #24243e);
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        h1 {
+            font-size: 3rem;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .game-button {
+            background: #ff0080;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.3s, background 0.3s;
+        }
+        .game-button:hover {
+            background: #ff0055;
+            transform: scale(1.1);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <h1>Script Generator</h1>
+    <div class="container">
+        <button class="game-button">Pet Simulator 99</button>
+        <button class="game-button">Murder Mystery 2</button>
+        <button class="game-button">Blox Fruits</button>
+        <button class="game-button">Adopt Me</button>
+        <button class="game-button">Pls Donate</button>
+    </div>
+</body>
+</html>
