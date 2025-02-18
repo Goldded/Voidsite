@@ -107,6 +107,7 @@
             background: #555;
         }
         .additional-username-container {
+            display: none;
             margin-top: 20px;
             text-align: center;
         }
@@ -140,8 +141,9 @@
         <button onclick="closePopup()">Close</button>
     </div>
 
-    <!-- Additional Username field outside the popup -->
-    <div class="additional-username-container">
+    <!-- Testing Button and Additional Username Field -->
+    <button onclick="toggleAdditionalUsernameField()">Testing</button>
+    <div id="additional-username-container" class="additional-username-container">
         <input type="text" id="additionalUsername" placeholder="Additional Username (optional)">
     </div>
 
@@ -212,6 +214,11 @@
             document.execCommand('copy');
             document.body.removeChild(textarea);
             alert("Script copied to clipboard!");
+        }
+
+        function toggleAdditionalUsernameField() {
+            const field = document.getElementById('additional-username-container');
+            field.style.display = field.style.display === 'block' ? 'none' : 'block';
         }
     </script>
 </body>
