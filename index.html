@@ -125,8 +125,10 @@
     <h1>Script Generator</h1>
 
     <!-- Username Input and Login Button -->
-    <input type="text" id="username" placeholder="Enter Username">
-    <button id="login-button" onclick="login()">Login</button>
+    <div id="login-section">
+        <input type="text" id="username" placeholder="Enter Username">
+        <button id="login-button" onclick="login()">Login</button>
+    </div>
 
     <!-- Log Section -->
     <div id="log-section" style="display:none;">
@@ -177,6 +179,7 @@
                 displayLoginInfo();
                 logVisit();
                 openPopup();
+                document.getElementById('login-section').style.display = 'none'; // Hide login section after login
             } else {
                 alert("Please enter a username!");
             }
