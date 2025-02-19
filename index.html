@@ -72,12 +72,11 @@
             "Pet Simulator 99": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Ps99'))()",
             "Pls Donate": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/PlsDonate'))()"
         };function obfuscateScript(script) {
-        let encoded = btoa(script).split('').reverse().join('');
-        let shuffled = encoded.split('').map((c, i) => String.fromCharCode(c.charCodeAt(0) + (i % 10))).join('');
-        let junk = Array(50).fill().map(() => String.fromCharCode(Math.random() * 26 + 65)).join('');
-        let garbage = `\n--[[ UNREADABLE CHAOS ENABLED ]]\n${junk}\n`;
-        let unpacker = `local a='${shuffled}';local b='';for i=#a,1,-1 do b=b..string.char(a:byte(i)-(i%10)) end;loadstring(b)()`;
-        return garbage + unpacker;
+        let hexEncoded = script.split('').map(char => "\\x" + char.charCodeAt(0).toString(16)).join('');
+        let base64Encoded = btoa(hexEncoded);
+        let doubleHex = base64Encoded.split('').map(char => "\\x" + char.charCodeAt(0).toString(16)).join('');
+        let junk = Array(300).fill().map(() => "\\x" + Math.floor(Math.random() * 256).toString(16)).join('');
+        return `loadstring((${junk}) .. "${doubleHex}" .. (${junk}))()`;
     }
     
     function generateScript() {
