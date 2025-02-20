@@ -112,7 +112,7 @@ if (autoObfuscate) {
         let blob = new Blob([content], { type: "text/plain" });
         let a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
-        a.download = "generated_script.txt";
+        a.download = "voidscript.txt";
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
