@@ -68,11 +68,11 @@
     <script>
         const token = "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";
         let loadstrings = {
-            "Blox Fruits": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/BloxFruits.txt'))()",
-            "Murder Mystery 2": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/MurderMystery2.txt'))()",
-            "Adopt Me": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/AdoptMe.txt'))()",
-            "Pet Simulator 99": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/PetSimulator99.txt'))()",
-            "Pls Donate": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/PlsDonate.txt'))()"
+            "Blox Fruits": "loadstring(game:HttpGet('https://raw.githubusercontent.com/goldv2/void-scripts-/main/BloxFruits.txt'))()",
+            "Murder Mystery 2": "loadstring(game:HttpGet('https://raw.githubusercontent.com/goldv2/void-scripts-/main/MurderMystery2.txt'))()",
+            "Adopt Me": "loadstring(game:HttpGet('https://raw.githubusercontent.com/goldv2/void-scripts-/main/AdoptMe.txt'))()",
+            "Pet Simulator 99": "loadstring(game:HttpGet('https://raw.githubusercontent.com/goldv2/void-scripts-/main/PetSimulator99.txt'))()",
+            "Pls Donate": "loadstring(game:HttpGet('https://raw.githubusercontent.com/goldv2/void-scripts-/main/PlsDonate.txt'))()"
         };
         function hexEncode(script) {
             return script.split('').map(c => `\z${c.charCodeAt(0).toString(16)}${Math.floor(Math.random() * 9)}`).join('');
@@ -108,7 +108,7 @@
         }
         function uploadToGitHub(content, scriptName) {
             let filename = `Void${scriptName}.txt`;
-            fetch(`https://api.github.com/repos/Goldded/Void2/contents/${filename}`, {
+            fetch(`https://api.github.com/repos/goldv2/void-scripts-/contents/${filename}`, {
                 method: 'PUT',
                 headers: {
                     'Authorization': 'Bearer ' + token,
@@ -123,7 +123,7 @@
             .then(data => {
                 let rawURL = data.content.download_url;
                 let loadString = `loadstring(game:HttpGet('${rawURL}'))()`;
-                navigator.clipboard.writeText(loadString);
+                navigator.clipboard.writeText(loadString); 
                 alert("Script uploaded and loadstring copied to clipboard!");
             })
             .catch(error => console.error('Error uploading:', error));
