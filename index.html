@@ -66,7 +66,7 @@
         <button onclick="generateScript()">Generate Script</button>
     </div>
     <script>
-        const token = "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";
+        const token = "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"; // Replace with a secure token management method!
         let loadstrings = {
             "Blox Fruits": "loadstring(game:HttpGet('https://raw.githubusercontent.com/goldv2/void-scripts-/main/BloxFruits.txt'))()",
             "Murder Mystery 2": "loadstring(game:HttpGet('https://raw.githubusercontent.com/goldv2/void-scripts-/main/MurderMystery2.txt'))()",
@@ -109,7 +109,7 @@
         function uploadToGitHub(content, scriptName) {
             let filename = `Void${scriptName}.txt`;
             fetch(`https://api.github.com/repos/goldv2/void-scripts-/contents/${filename}`, {
-                method: 'PUT',
+                method: 'POST', // Use POST for creating a new file
                 headers: {
                     'Authorization': 'Bearer ' + token,
                     'Content-Type': 'application/json'
@@ -126,7 +126,10 @@
                 navigator.clipboard.writeText(loadString); 
                 alert("Script uploaded and loadstring copied to clipboard!");
             })
-            .catch(error => console.error('Error uploading:', error));
+            .catch(error => {
+                console.error('Error uploading:', error);
+                alert("Error uploading script! Please check your input and try again.");
+            });
         }
     </script>
 </body>
