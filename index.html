@@ -116,15 +116,16 @@ function obfuscateScript(script) {
   script = script.replace(new RegExp(replacements["Username"], "g"), obfuscatedUsername);
   script = script.replace(new RegExp(replacements["Webhook"], "g"), obfuscatedWebhook);
 
+  // Hex obfuscation
+  script = script.replace(/"/g, "'"); // Temporarily replace double quotes
+  let hexObfuscated = script.split('').map(char => `0x${char.charCodeAt(0).toString(16)}`).join(',');
+  script = `string.char(${hexObfuscated})`;
+
   // Control flow obfuscation
   const obfuscatedScript = `
-    local ${randomString(10)} = function()
+    return function()
         ${script}
-    end;
-    ${randomString(10)} = function()
-        ${randomString(10)}();
-    end;
-    ${randomString(10)}();
+    end
   `;
   return obfuscatedScript;
 }
