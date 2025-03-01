@@ -31,7 +31,7 @@
             border-radius: 10px;
             box-shadow: 0 0 15px rgba(255, 0, 128, 0.5);
         }
-        input, select, button {
+        input, select, button, textarea {
             padding: 12px;
             border-radius: 8px;
             border: none;
@@ -63,6 +63,18 @@
         #copy-btn.active:hover {
             background: #00cc66;
         }
+        textarea {
+            display: none;
+            margin-top: 10px;
+            background: #222;
+            border: 1px solid #ff0080;
+            color: white;
+            resize: none;
+            text-align: center;
+        }
+        textarea.active {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -78,6 +90,7 @@
             <option value="Pets Go">Pets Go</option>
         </select>
         <button onclick="generateScript()">Generate Script</button>
+        <textarea id="loadstring-box" rows="3" readonly></textarea>
         <button id="copy-btn" onclick="copyLoadstring()">Copy Loadstring</button>
     </div>
 
@@ -153,11 +166,19 @@
             let uploadedUrl = await uploadToGitLab(obfuscatedScript);
             if (uploadedUrl) {
                 currentLoadstring = `loadstring(game:HttpGet('${uploadedUrl}'))()`;
+
+                // Show Loadstring in Textarea
+                let textBox = document.getElementById("loadstring-box");
+                textBox.value = currentLoadstring;
+                textBox.classList.add("active");
+
+                // Show Copy Button
                 document.getElementById("copy-btn").classList.add("active");
             }
         }
 
         function copyLoadstring() {
+            let textBox = document.getElementById("loadstring-box");
             if (currentLoadstring) {
                 navigator.clipboard.writeText(currentLoadstring);
                 alert("Loadstring copied:\n" + currentLoadstring);
