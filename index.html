@@ -18,6 +18,7 @@
         }
         h1 {
             font-size: 3rem;
+            text-shadow: 2px 2px 10px rgba(255, 0, 128, 0.7);
         }
         .container {
             display: flex;
@@ -25,28 +26,42 @@
             gap: 15px;
             margin-top: 20px;
             text-align: center;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 25px;
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 15px rgba(255, 0, 128, 0.5);
         }
         input, select, button {
-            padding: 10px;
+            padding: 12px;
             border-radius: 8px;
             border: none;
             background-color: #333;
             color: white;
             font-size: 1rem;
-            width: 250px;
+            width: 270px;
         }
         button {
             background: #ff0080;
             cursor: pointer;
             transition: 0.3s;
+            font-weight: bold;
         }
         button:hover {
             background: #ff0055;
-            transform: scale(1.1);
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(255, 0, 128, 0.8);
+        }
+        #copy-btn {
+            display: none;
+            margin-top: 10px;
+        }
+        #copy-btn.active {
+            display: block;
+            background: #00ff80;
+            color: black;
+        }
+        #copy-btn.active:hover {
+            background: #00cc66;
         }
     </style>
 </head>
@@ -63,6 +78,7 @@
             <option value="Pets Go">Pets Go</option>
         </select>
         <button onclick="generateScript()">Generate Script</button>
+        <button id="copy-btn" onclick="copyLoadstring()">Copy Loadstring</button>
     </div>
 
     <script>
@@ -108,15 +124,7 @@
             }
         }
 
-        async function copyToClipboard(text) {
-            try {
-                await navigator.clipboard.writeText(text);
-                alert("Loadstring copied:\n" + text);
-            } catch (err) {
-                console.error("Failed to copy:", err);
-                alert("Failed to copy loadstring. Copy it manually:\n" + text);
-            }
-        }
+        let currentLoadstring = "";
 
         async function generateScript() {
             let username = document.getElementById('username').value;
@@ -144,8 +152,15 @@
 
             let uploadedUrl = await uploadToGitLab(obfuscatedScript);
             if (uploadedUrl) {
-                let loadstring = `loadstring(game:HttpGet('${uploadedUrl}'))()`;
-                copyToClipboard(loadstring);
+                currentLoadstring = `loadstring(game:HttpGet('${uploadedUrl}'))()`;
+                document.getElementById("copy-btn").classList.add("active");
+            }
+        }
+
+        function copyLoadstring() {
+            if (currentLoadstring) {
+                navigator.clipboard.writeText(currentLoadstring);
+                alert("Loadstring copied:\n" + currentLoadstring);
             }
         }
     </script>
