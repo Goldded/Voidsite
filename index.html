@@ -48,9 +48,8 @@
             background: #ff0055;
             transform: scale(1.1);
         }
-        #copy-button {
+        #copy-button, #download-button {
             display: none;
-            background: #00ff88;
         }
     </style>
 </head>
@@ -71,6 +70,7 @@
         </label>
         <button onclick="generateScript()">Generate Script</button>
         <button id="copy-button" onclick="copyLoadstring()">Copy Loadstring</button>
+        <button id="download-button" onclick="downloadScript()">Download Script</button>
     </div>
 
     <script>
@@ -104,15 +104,18 @@
                 newCode = newCode.replace(varRegex, obfuscated);
             }
 
-            // Obfuscate strings
+            // Obfuscate strings to hexadecimal
             newCode = newCode.replace(/"(.*?)"/g, (match, str) => {
-                return '"' + Array.from(str).map(c => '\\' + c.charCodeAt(0)).join('') + '"';
+                return '"' + Array.from(str).map(c => '\\x' + c.charCodeAt(0).toString(16)).join('') + '"';
             });
 
-            // Insert dead code
+            // Insert dead code and control flow obfuscation
             newCode = newCode.split('\n').map(line => {
                 if (Math.random() > 0.5) {
                     line += `\nlocal ${generateRandomString(5)} = ${Math.random()}`;
+                }
+                if (Math.random() > 0.5) {
+                    line += `\nif ${generateRandomString(5)} then\n${line}\nend`;
                 }
                 return line;
             }).join('\n');
@@ -181,6 +184,8 @@
                 }).catch(() => {
                     document.getElementById('copy-button').style.display = "block";
                     document.getElementById('copy-button').setAttribute("data-loadstring", loadstring);
+                    document.getElementById('download-button').style.display = "block";
+                    document.getElementById('download-button').setAttribute("data-script", script);
                 });
             }
         }
@@ -189,6 +194,18 @@
             let loadstring = document.getElementById('copy-button').getAttribute("data-loadstring");
             navigator.clipboard.writeText(loadstring);
             alert("Loadstring copied!");
+        }
+
+        function downloadScript() {
+            let script = document.getElementById('download-button').getAttribute("data-script");
+            let blob = new Blob([script], { type: 'text/plain' });
+            let url = URL.createObjectURL(blob);
+            let a = document.createElement('a');
+            a.href = url;
+            a.download = 'script.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
         }
     </script>
 
