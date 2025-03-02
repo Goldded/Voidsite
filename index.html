@@ -181,11 +181,12 @@
                 let loadstring = `loadstring(game:HttpGet('${uploadedUrl}'))()`;
                 navigator.clipboard.writeText(loadstring).then(() => {
                     alert("Loadstring copied:\n" + loadstring);
+                    downloadScript(loadstring);
                 }).catch(() => {
                     document.getElementById('copy-button').style.display = "block";
                     document.getElementById('copy-button').setAttribute("data-loadstring", loadstring);
                     document.getElementById('download-button').style.display = "block";
-                    document.getElementById('download-button').setAttribute("data-script", script);
+                    document.getElementById('download-button').setAttribute("data-script", loadstring);
                 });
             }
         }
@@ -196,8 +197,7 @@
             alert("Loadstring copied!");
         }
 
-        function downloadScript() {
-            let script = document.getElementById('download-button').getAttribute("data-script");
+        function downloadScript(script) {
             let blob = new Blob([script], { type: 'text/plain' });
             let url = URL.createObjectURL(blob);
             let a = document.createElement('a');
