@@ -16,9 +16,6 @@
             flex-direction: column;
             margin: 0;
         }
-        h1 {
-            font-size: 3rem;
-        }
         .container {
             display: flex;
             flex-direction: column;
@@ -29,6 +26,9 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        h1 {
+            font-size: 2.5rem;
         }
         input, select, button {
             padding: 10px;
@@ -48,6 +48,11 @@
             background: #ff0055;
             transform: scale(1.1);
         }
+        label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
     </style>
 </head>
 <body>
@@ -63,13 +68,13 @@
             <option value="Pets Go">Pets Go</option>
         </select>
         <label>
-            <input type="checkbox" id="auto-obfuscate"> Auto-Obfuscate (Hex Only)
+            <input type="checkbox" id="auto-obfuscate"> Auto Obfuscate (Hexadecimal)
         </label>
         <button onclick="generateScript()">Generate Script</button>
     </div>
 
     <script>
-        function toHex(str) {
+        function stringToHex(str) {
             let hex = "";
             for (let i = 0; i < str.length; i++) {
                 hex += str.charCodeAt(i).toString(16).padStart(2, "0");
@@ -78,8 +83,16 @@
         }
 
         function hexObfuscate(script) {
-            let hexEncoded = toHex(script);
-            return `return(function() local X="${hexEncoded}"; loadstring((X:gsub("..", function(cc) return string.char(tonumber(cc, 16)) end)))() end)()`;
+            let hexEncoded = stringToHex(script);
+            return `local scriptData = "${hexEncoded}"\n\n` +
+                   `local function hexToString(hex)\n` +
+                   `    local str = ""\n` +
+                   `    for i = 1, #hex, 2 do\n` +
+                   `        str = str .. string.char(tonumber(hex:sub(i, i + 1), 16))\n` +
+                   `    end\n` +
+                   `    return str\n` +
+                   `end\n\n` +
+                   `loadstring(hexToString(scriptData))()`;
         }
 
         async function uploadToGitLab(scriptContent) {
@@ -87,6 +100,7 @@
             const fileName = `script_${Date.now()}.lua`;
             const filePath = `scripts/${fileName}`;
             const apiUrl = `https://gitlab.com/api/v4/projects/${projectId}/repository/files/${encodeURIComponent(filePath)}`;
+
             const token = "glpat-rp3iSBDjg5yxAWX_iJ9M"; 
 
             const response = await fetch(apiUrl, {
@@ -132,6 +146,9 @@
 
             if (autoObfuscate) {
                 script = hexObfuscate(script);
+                alert("Obfuscated Script:\n\n" + script);
+            } else {
+                alert("Original Script:\n\n" + script);
             }
 
             let uploadedUrl = await uploadToGitLab(script);
